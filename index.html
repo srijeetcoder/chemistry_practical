@@ -1516,6 +1516,12 @@
         </div>
 
         <div class="quick-actions">
+          <button class="btn" onclick="openNamePopupManual()" style="border-color: rgba(34, 211, 238, 0.3); color: var(--color-cyan);">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            Set Name
+          </button>
           <button class="btn" onclick="triggerShowAllFormulas()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round"
@@ -3611,6 +3617,9 @@
     }
 
     function showPopup() {
+      const savedName = localStorage.getItem('chemistryVisitorName') || '';
+      nameInput.value = (savedName === 'Anonymous') ? '' : savedName;
+      
       backdrop.style.display = 'flex';
       setTimeout(() => {
         backdrop.classList.add('active');
@@ -3654,6 +3663,8 @@
             visitedAt: serverTimestamp()
           }, { merge: true });
           
+          localStorage.setItem('chemistryVisitorName', name);
+          
           closePopupUI();
           await refreshVisitorData();
         } catch (err) {
@@ -3678,10 +3689,14 @@
         let totalUnique = 0;
         let totalNamed = 0;
         let namedList = [];
+        const visitorId = localStorage.getItem('chemistryVisitorId');
 
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           totalUnique++;
+          if (data.visitorId === visitorId && data.name) {
+            localStorage.setItem('chemistryVisitorName', data.name);
+          }
           if (data.isNamedVisitor && data.name && data.name !== "Anonymous") {
             totalNamed++;
             namedList.push(data);
@@ -3786,6 +3801,7 @@
 
     // Expose refresh functionality globally for tab switching
     window.refreshVisitorData = refreshVisitorData;
+    window.openNamePopupManual = showPopup;
 
     // Run visitor initialization
     initVisitor();
