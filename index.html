@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemistry Lab Viva Dashboard</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Ultimate chemistry viva preparation dashboard. Interactive study guides, flashcards, and quizzes for engineering and practical chemistry labs.">
+  <meta name="keywords" content="chemistry viva, conductometric, pH metric, argentometry, acid value, engineering chemistry, lab practical">
+  
+  <!-- Font Embedding (Google Fonts) with system fallbacks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* DESIGN SYSTEM & CORE TOKENS */
+    :root {
+      --bg-base: #060913;
+      --bg-surface: #0f1526;
+      --bg-card: #151e33;
+      --bg-card-hover: #1b2640;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(16, 185, 129, 0.2);
+      
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      
+      /* Chemical Science Color Palette */
+      --color-emerald: #10b981;     /* Primary Conductance / Neutralization */
+      --color-cyan: #06b6d4;        /* Secondary Aqua / Silver Ion */
+      --color-purple: #8b5cf6;      /* Formulas / Calculations */
+      --color-amber: #f59e0b;       /* Oil / Precautions */
+      --color-rose: #f43f5e;        /* Endpoint / Error Alert */
+      
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* SCROLLBARS */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-card);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-cyan);
+    }
+
+    /* CORE DASHBOARD LAYOUT */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR NAVIGATION */
+    .sidebar {
+      background-color: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--color-cyan), var(--color-emerald));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+
+    .logo-text {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sidebar-menu {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .menu-section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+      transition: var(--transition-smooth);
+      text-decoration: none;
+    }
+
+    .menu-item:hover {
+      background-color: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .menu-item.active {
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--color-cyan);
+      border-color: rgba(6, 182, 212, 0.2);
+      box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.05);
+    }
+
+    .menu-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .menu-checkbox {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .menu-checkbox.checked {
+      background-color: var(--color-emerald);
+      border-color: var(--color-emerald);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .sidebar-footer {
+      padding: 1.25rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* PROGRESS CONTAINER */
+    .progress-widget {
+      background: linear-gradient(145deg, rgba(21, 30, 51, 0.5), rgba(15, 21, 38, 0.5));
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background-color: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--color-cyan), var(--color-emerald));
+      border-radius: 3px;
+      transition: width 0.4s ease-out;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    }
+
+    .progress-status-text {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    /* MAIN PANEL */
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* TOP HEADER & SEARCH */
+    .dashboard-header {
+      background-color: rgba(15, 21, 38, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      gap: 1.5rem;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .header-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .search-container {
+      position: relative;
+      width: 380px;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 30px;
+      padding: 0.6rem 1.2rem 0.6rem 2.5rem;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      transition: var(--transition-smooth);
+    }
+
+    .search-input:focus {
+      outline: none;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: var(--color-cyan);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      width: 16px;
+      height: 16px;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition-smooth);
+    }
+
+    .btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-cyan), var(--color-emerald));
+      border: none;
+      color: #060913;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
+    }
+
+    .btn-danger {
+      background-color: rgba(244, 63, 94, 0.1);
+      border-color: rgba(244, 63, 94, 0.2);
+      color: var(--color-rose);
+    }
+
+    .btn-danger:hover {
+      background-color: var(--color-rose);
+      color: white;
+    }
+
+    /* DASHBOARD CONTENT BODY */
+    .dashboard-content {
+      padding: 2rem;
+      flex-grow: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ACTIVE EXPERIMENT CARD HEADER */
+    .exp-hero {
+      background: linear-gradient(135deg, #151e33 0%, #0c1222 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .exp-hero::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+      top: -100px;
+      right: -50px;
+      pointer-events: none;
+    }
+
+    .exp-badge {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-cyan);
+      background-color: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 30px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .exp-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.25;
+    }
+
+    .exp-aim {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 800px;
+      border-left: 3px solid var(--color-cyan);
+      padding-left: 1rem;
+    }
+
+    /* INTERACTIVE EXPERIMENT TABS */
+    .tabs-nav {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+      gap: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.75rem 0.25rem 1rem 0.25rem;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      transition: var(--transition-smooth);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      color: var(--color-cyan);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--color-cyan), var(--color-emerald));
+      box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CARD STRUCTURES */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .content-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.50rem;
+      color: var(--text-primary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.5rem;
+    }
+
+    /* THEORY ELEMENTS */
+    .highlight-box {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .formula-display {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      text-align: center;
+      padding: 1rem;
+      background: #0b101f;
+      border: 1px dashed rgba(6, 182, 212, 0.3);
+      border-radius: 8px;
+      margin: 1rem 0;
+      color: var(--color-cyan);
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
+    }
+
+    .reaction-eq {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      background-color: #0b101f;
+      border-left: 3px solid var(--color-emerald);
+      padding: 0.75rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    /* LAB SIMULATOR (WOW FACTOR) */
+    .lab-visualizer {
+      background-color: #070b16;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .beaker-container {
+      position: relative;
+      width: 140px;
+      height: 170px;
+      margin-top: 10px;
+    }
+
+    .beaker {
+      width: 100%;
+      height: 100%;
+      border: 4px solid #e2e8f0;
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .beaker::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      width: 80%;
+      height: 4px;
+      background-color: #e2e8f0;
+      border-radius: 2px;
+    }
+
+    .beaker-liquid {
+      width: 100%;
+      height: 60%;
+      background-color: rgba(6, 182, 212, 0.2);
+      transition: background-color 0.4s ease, height 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .beaker-liquid.pink {
+      background-color: rgba(244, 63, 94, 0.4) !important;
+    }
+
+    .beaker-liquid.yellow-indicator {
+      background-color: rgba(245, 158, 11, 0.25);
+    }
+
+    .beaker-liquid.red-precipitate {
+      background-color: rgba(190, 24, 74, 0.45) !important;
+    }
+
+    .precipitate-particles {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0px;
+      background-color: rgba(255, 255, 255, 0.85);
+      transition: height 0.4s ease, background-color 0.4s ease;
+    }
+
+    .precipitate-particles.silver-chromate {
+      background-color: #991b1b;
+    }
+
+    .beaker-bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .digital-meter {
+      background-color: #0d1326;
+      border: 2px solid #1e293b;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-family: var(--font-display);
+      text-align: center;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .meter-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .meter-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-emerald);
+      text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    .simulator-control {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .lab-slider {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #1e293b;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .lab-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--color-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
+      transition: transform 0.1s;
+    }
+
+    .lab-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* SVG GRAPH COMPONENT */
+    .graph-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .graph-svg-wrapper {
+      background-color: #0b101f;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      width: 100%;
+    }
+
+    .graph-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* FLASHCARDS (ACTIVE RECALL) */
+    .flashcard-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .flashcard-container {
+      perspective: 1000px;
+      width: 100%;
+      max-width: 480px;
+      height: 260px;
+      cursor: pointer;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .flashcard-container.flipped .flashcard {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-color);
+    }
+
+    .flashcard-front {
+      background: linear-gradient(135deg, var(--bg-card) 0%, #1c263d 100%);
+      justify-content: space-between;
+      border-left: 4px solid var(--color-cyan);
+    }
+
+    .flashcard-back {
+      background: linear-gradient(135deg, #111b30 0%, #080d1a 100%);
+      transform: rotateY(180deg);
+      justify-content: center;
+      border-left: 4px solid var(--color-emerald);
+      overflow-y: auto;
+    }
+
+    .card-meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--color-cyan);
+      font-weight: 700;
+    }
+
+    .card-question {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: auto 0;
+      line-height: 1.4;
+    }
+
+    .card-answer {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .card-flip-prompt {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.25rem;
+    }
+
+    .flashcard-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .card-counter {
+      font-size: 0.9rem;
+      font-family: var(--font-display);
+      color: var(--text-secondary);
+    }
+
+    /* MCQ QUIZ WIZARD */
+    .quiz-wizard {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 680px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .quiz-progress-bar {
+      width: 100%;
+      height: 4px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      width: 10%;
+      background-color: var(--color-cyan);
+      transition: width 0.3s ease;
+    }
+
+    .quiz-question-num {
+      font-size: 0.8rem;
+      color: var(--color-cyan);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .quiz-question-text {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .quiz-option {
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.9rem 1.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      transition: var(--transition-smooth);
+    }
+
+    .quiz-option:hover {
+      background-color: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .quiz-option.selected {
+      border-color: var(--color-cyan);
+      background-color: rgba(6, 182, 212, 0.08);
+    }
+
+    .quiz-option.correct {
+      border-color: var(--color-emerald) !important;
+      background-color: rgba(16, 185, 129, 0.08) !important;
+      color: #34d399;
+    }
+
+    .quiz-option.incorrect {
+      border-color: var(--color-rose) !important;
+      background-color: rgba(244, 63, 94, 0.08) !important;
+      color: #f87171;
+    }
+
+    .quiz-feedback {
+      background-color: rgba(255, 255, 255, 0.02);
+      border-left: 3px solid var(--color-cyan);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: none;
+    }
+
+    .quiz-feedback.visible {
+      display: block;
+    }
+
+    .quiz-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    /* QUIZ SCORE PAGE */
+    .quiz-score-page {
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+
+    .score-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 5px solid var(--color-cyan);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 1.5rem auto;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+    }
+
+    .score-num {
+      font-family: var(--font-display);
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .score-total {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* NIGHT BEFORE CHECKLIST & TEACHER MAY ASK */
+    .checklist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      transition: var(--transition-smooth);
+    }
+
+    .checklist-item:hover {
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      margin-top: 0.25rem;
+      cursor: pointer;
+      accent-color: var(--color-emerald);
+      width: 16px;
+      height: 16px;
+    }
+
+    .checklist-text-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .checklist-item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .checklist-item-desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .checklist-item.checked {
+      opacity: 0.6;
+      border-color: rgba(16, 185, 129, 0.2);
+      background-color: rgba(16, 185, 129, 0.02);
+    }
+
+    .checklist-item.checked .checklist-item-title {
+      text-decoration: line-through;
+    }
+
+    /* ACCORDIONS (TEACHER MAY ASK) */
+    .accordion-item {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.02);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      font-family: var(--font-display);
+      transition: var(--transition-smooth);
+    }
+
+    .accordion-header:hover {
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .accordion-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-right: 1.5rem;
+    }
+
+    .accordion-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .badge-exp1 { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .badge-exp2 { background-color: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+    .badge-exp3 { background-color: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+    .badge-exp4 { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+    .accordion-icon {
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+      color: var(--text-muted);
+    }
+
+    .accordion-item.open .accordion-icon {
+      transform: rotate(180deg);
+      color: var(--color-cyan);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      background-color: rgba(0, 0, 0, 0.15);
+      border-top: 1px solid transparent;
+    }
+
+    .accordion-item.open .accordion-content {
+      border-color: var(--border-color);
+    }
+
+    .accordion-inner-body {
+      padding: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* SEARCH OVERLAY PANEL */
+    .search-overlay {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      max-height: 450px;
+      overflow-y: auto;
+      z-index: 150;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      display: none;
+    }
+
+    .search-overlay.visible {
+      display: block;
+    }
+
+    .search-result-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .search-result-group-title {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-cyan);
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.25rem;
+    }
+
+    .search-result-item {
+      padding: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .search-result-item:hover {
+      background-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .search-result-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .search-result-snippet {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .search-result-snippet mark {
+      background-color: rgba(6, 182, 212, 0.3);
+      color: white;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    .no-results {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 2rem 0;
+      font-size: 0.9rem;
+    }
+
+    /* RESPONSIVE LAYOUT */
+    @media (max-width: 1024px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+      }
+      .sidebar-menu {
+        display: none; /* Can be toggled on mobile, for now simple top flow */
+      }
+      .sidebar-menu.mobile-visible {
+        display: flex;
+      }
+      .main-panel {
+        height: auto;
+      }
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+      .search-container {
+        width: 100%;
+      }
+      .quick-actions {
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 2v7.5M14 2v7.5M8.5 2h7M14 11.5a3 3 0 0 0-4 0M10.5 22h3c2.5 0 4-1.5 4-4.5V11.5h-11V17.5c0 3 1.5 4.5 4 4.5Z"/>
+          </svg>
+        </div>
+        <span class="logo-text">VIVA-LAB // CHEM</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-section-title">Experiments</div>
+        
+        <div class="menu-item active" onclick="switchMainTab('exp1')">
+          <div class="menu-item-left">
+            <span class="menu-checkbox" id="check-exp1" onclick="toggleExperimentCompleted('exp1', event)"></span>
+            <span>1. Conductometric</span>
+          </div>
+        </div>
+
+        <div class="menu-item" onclick="switchMainTab('exp2')">
+          <div class="menu-item-left">
+            <span class="menu-checkbox" id="check-exp2" onclick="toggleExperimentCompleted('exp2', event)"></span>
+            <span>2. pH Metric</span>
+          </div>
+        </div>
+
+        <div class="menu-item" onclick="switchMainTab('exp3')">
+          <div class="menu-item-left">
+            <span class="menu-checkbox" id="check-exp3" onclick="toggleExperimentCompleted('exp3', event)"></span>
+            <span>3. Argentometry</span>
+          </div>
+        </div>
+
+        <div class="menu-item" onclick="switchMainTab('exp4')">
+          <div class="menu-item-left">
+            <span class="menu-checkbox" id="check-exp4" onclick="toggleExperimentCompleted('exp4', event)"></span>
+            <span>4. Acid Value of Oil</span>
+          </div>
+        </div>
+
+        <div class="menu-section-title" style="margin-top: 1.5rem;">Revision Tools</div>
+        
+        <div class="menu-item" onclick="switchMainTab('checklist')">
+          <div class="menu-item-left">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            <span>Night Before Checklist</span>
+          </div>
+        </div>
+
+        <div class="menu-item" onclick="switchMainTab('teacher-may-ask')">
+          <div class="menu-item-left">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Teacher May Ask</span>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="progress-widget">
+          <div class="progress-header">
+            <span>Core Progress</span>
+            <span id="overall-percentage">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="overall-progress-fill"></div>
+          </div>
+          <div class="progress-status-text" id="overall-status-text">0/4 Completed</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN DASHBOARD PANEL -->
+    <main class="main-panel">
+      
+      <!-- TOP DASHBOARD HEADER & LIVE SEARCH -->
+      <header class="dashboard-header">
+        <div class="header-left">
+          <h1 class="header-title" id="dashboard-header-title">Conductometric Titration</h1>
+          <span class="header-subtitle">Practical Engineering Chemistry Viva Guide</span>
+        </div>
+
+        <div class="search-container">
+          <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" class="search-input" id="search-box" placeholder="Search endpoint, indicator, pH..." oninput="handleSearch()">
+          
+          <!-- Search Results Dropdown Overlay -->
+          <div class="search-overlay" id="search-overlay-panel">
+            <!-- Results injected here -->
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="btn" onclick="triggerShowAllFormulas()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            Formulae Cheat
+          </button>
+          <button class="btn btn-danger" onclick="resetAllProgress()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Reset
+          </button>
+        </div>
+      </header>
+
+      <!-- SEARCH OVERLAY DISMISS WRAPPER -->
+      <div class="dashboard-content" id="dashboard-content-area">
+
+        <!-- ==================== EXPERIMENT 1: CONDUCTOMETRIC ==================== -->
+        <section id="pane-exp1" class="tab-pane active">
+          <div class="exp-hero">
+            <span class="exp-badge">Experiment 01</span>
+            <h2 class="exp-title">Conductometric Titration</h2>
+            <div class="exp-aim"><strong>Aim:</strong> Determination of strength of hydrochloric acid (HCl) using a standard solution of sodium hydroxide (NaOH).</div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+              <button class="btn btn-primary" onclick="markExperimentRevised('exp1')">Mark as Revised</button>
+              <button class="btn" onclick="scrollToQuiz('exp1')">Start Quiz</button>
+            </div>
+          </div>
+
+          <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchSubTab('exp1', 'theory', this)">Theory & Reactions</button>
+            <button class="tab-btn" onclick="switchSubTab('exp1', 'procedure', this)">Apparatus & Steps</button>
+            <button class="tab-btn" onclick="switchSubTab('exp1', 'simulator', this)">Simulator & Graph</button>
+            <button class="tab-btn" onclick="switchSubTab('exp1', 'flashcards', this)">Viva Flashcards</button>
+            <button class="tab-btn" onclick="switchSubTab('exp1', 'quiz', this)">10-MCQ Quiz</button>
+          </nav>
+
+          <!-- Exp 1 Sub Tabs -->
+          <div id="exp1-theory" class="sub-tab-pane active">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Core Principles</h3>
+                  <p><strong>Conductance (G):</strong> It is the ease with which electric current flows through a solution. Mathematically, it is the reciprocal of electrical resistance: <strong>G = 1/R</strong>. Unit is Siemens (S).</p>
+                  <p style="margin-top: 0.5rem;"><strong>Specific Conductance (&kappa;):</strong> The conductance of 1 cm<sup>3</sup> of electrolyte solution. It relates to conductance via: <strong>&kappa; = G &times; (l/A)</strong>, where (l/A) is the <strong>Cell Constant</strong>.</p>
+                  
+                  <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>Why does conductance drop, then rise?</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">1. <strong>Before Equivalence Point:</strong> When NaOH is added, highly mobile H<sup>+</sup> ions ($349.8\,\text{S cm}^2/\text{eq}$) are neutralized by OH<sup>-</sup> to form water, and replaced by slower, heavier Na<sup>+</sup> ions ($50.1\,\text{S cm}^2/\text{eq}$). Hence, conductance decreases rapidly.</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">2. <strong>After Equivalence Point:</strong> All HCl is neutralized. Further addition of NaOH introduces excess highly mobile OH<sup>-</sup> ions ($198\,\text{S cm}^2/\text{eq}$) and Na<sup>+</sup> ions. Hence, conductance increases sharply.</p>
+                  </div>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Chemical Reaction</h3>
+                  <div class="reaction-eq">
+                    H<sup>+</sup>(aq) + Cl<sup>-</sup>(aq) + Na<sup>+</sup>(aq) + OH<sup>-</sup>(aq) &rarr; Na<sup>+</sup>(aq) + Cl<sup>-</sup>(aq) + H<sub>2</sub>O(l)
+                  </div>
+                  <p style="font-size: 0.85rem; color: var(--text-secondary);">Neutralization of hydrochloric acid with sodium hydroxide produces soluble sodium chloride and unionized water.</p>
+                </div>
+              </div>
+
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">1-Minute Summary</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>Titrand:</strong> HCl (in beaker, 25 mL)</li>
+                    <li><strong>Titant:</strong> Standard NaOH (in burette)</li>
+                    <li><strong>Indicator:</strong> None! The conductivity meter is the indicator.</li>
+                    <li><strong>Endpoint Shape:</strong> Sharp V-shape intersection.</li>
+                    <li><strong>Common Mistake:</strong> Not stirring the solution after each NaOH addition.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp1-procedure" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Apparatus & Reagents</h3>
+                  <p><strong>Apparatus:</strong> Conductivity meter, Conductivity cell (dip-type with platinum electrodes), Burette, Pipette, Beakers, Magnetic stirrer.</p>
+                  <p style="margin-top: 0.5rem;"><strong>Reagents:</strong> Hydrochloric acid solution (~0.1 N HCl), Standard Sodium Hydroxide solution (0.1 N NaOH), Distilled water.</p>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Step-by-Step Procedure</h3>
+                  <ol style="padding-left: 1.25rem; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><strong>Calibrate:</strong> Calibrate the conductivity meter using a standard 0.1M KCl solution at room temperature.</li>
+                    <li><strong>Prepare Titrand:</strong> Pipette out exactly 25 mL of the given HCl solution into a clean 100 mL beaker. Add enough distilled water to submerge the conductivity cell.</li>
+                    <li><strong>Set Up:</strong> Dip the conductivity cell into the beaker. Ensure the electrodes are completely covered. Connect the cell to the meter. Record the initial conductance (V = 0 mL).</li>
+                    <li><strong>Titrate:</strong> Fill the burette with standard NaOH. Add NaOH in increments of 0.5 mL. Stir gently using the magnetic stirrer after each addition.</li>
+                    <li><strong>Measure:</strong> Wait for the reading to stabilize, and record the conductance.</li>
+                    <li><strong>Endpoint Transition:</strong> Continue additions until the conductance drops to a minimum, stabilizes, and then rises steadily for at least 5-6 readings.</li>
+                    <li><strong>Plot:</strong> Plot Conductance vs. Volume of NaOH added to determine the endpoint.</li>
+                  </ol>
+                </div>
+              </div>
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Precautions</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; color: var(--color-amber);">
+                    <li>Do not touch the platinum black coating inside the cell electrodes.</li>
+                    <li>Rinse the cell thoroughly with distilled water before and after use.</li>
+                    <li>Ensure there are no trapped air bubbles inside the cell envelope.</li>
+                    <li>Stir continuously and wait 30 seconds for stabilization before recording reading.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp1-simulator" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div class="lab-visualizer">
+                <h3 class="card-title" style="border-bottom:none; margin-bottom:0;">Conductance Simulator</h3>
+                <div class="beaker-container">
+                  <div class="beaker">
+                    <div class="beaker-liquid" id="sim1-liquid">
+                      <div class="beaker-bubbles"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="digital-meter">
+                  <div class="meter-label">Conductance (mS)</div>
+                  <div class="meter-value" id="sim1-conductance">25.00</div>
+                </div>
+
+                <div class="simulator-control">
+                  <div class="slider-label">
+                    <span>NaOH Added: <strong id="sim1-vol-text">0.0 mL</strong></span>
+                    <span>Endpoint ~ 15.0 mL</span>
+                  </div>
+                  <input type="range" class="lab-slider" id="sim1-slider" min="0" max="30" step="0.5" value="0" oninput="updateExp1Sim(this.value)">
+                </div>
+              </div>
+
+              <div class="content-card graph-card">
+                <h3 class="card-title">Conductometric Titration Graph</h3>
+                <div class="graph-svg-wrapper">
+                  <svg viewBox="0 0 200 120" class="graph-svg">
+                    <!-- Grid Lines -->
+                    <line x1="20" y1="10" x2="20" y2="100" stroke="#1e293b" stroke-width="0.5" />
+                    <line x1="20" y1="100" x2="190" y2="100" stroke="#1e293b" stroke-width="0.5" />
+                    <line x1="100" y1="10" x2="100" y2="100" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2" />
+                    
+                    <!-- Graph Line -->
+                    <path d="M 20 20 L 100 90 L 180 30" fill="none" stroke="rgba(6, 182, 212, 0.4)" stroke-width="2" />
+                    
+                    <!-- Interactive Dot -->
+                    <circle id="sim1-graph-dot" cx="20" cy="20" r="4" fill="var(--color-rose)" filter="drop-shadow(0 0 4px var(--color-rose))" />
+                    
+                    <!-- Axes Labels -->
+                    <text x="105" y="115" fill="var(--text-secondary)" font-size="7" font-family="sans-serif" text-anchor="middle">Volume of NaOH added (mL)</text>
+                    <text x="8" y="55" fill="var(--text-secondary)" font-size="7" font-family="sans-serif" text-anchor="middle" transform="rotate(-90 8 55)">Conductance</text>
+                    
+                    <!-- Endpoint Marker -->
+                    <text x="100" y="103" fill="var(--color-emerald)" font-size="6" font-family="sans-serif" text-anchor="middle">Equivalence Point (Ve)</text>
+                  </svg>
+                </div>
+                
+                <div class="content-card" style="padding:0; border:none; box-shadow:none; margin-bottom:0;">
+                  <h4 style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--color-purple);">Calculations & Formula</h4>
+                  <div class="formula-display">
+                    25 &times; S<sub>1</sub> = V<sub>3</sub> &times; S<sub>2</sub><br>
+                    <span style="font-size: 1rem; color: var(--text-secondary);">S<sub>1</sub> = (V<sub>3</sub> &times; S<sub>2</sub>) / 25</span>
+                  </div>
+                  <p style="font-size: 0.8rem; color:var(--text-secondary);">Where:<br>
+                    <strong>S<sub>1</sub></strong> = Strength of HCl (N)<br>
+                    <strong>S<sub>2</sub></strong> = Strength of standard NaOH (N)<br>
+                    <strong>V<sub>3</sub></strong> = Volume of NaOH at endpoint (mL) (from graph intersection)<br>
+                    <strong>25</strong> = Volume of HCl pipetted (mL)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp1-flashcards" class="sub-tab-pane" style="display:none;">
+            <div class="flashcard-section">
+              <div class="flashcard-container" id="fc1-container" onclick="flipFlashcard(1)">
+                <div class="flashcard">
+                  <div class="flashcard-front">
+                    <span class="card-meta">Conductometric // Q1</span>
+                    <p class="card-question" id="fc1-question">Why does conductance decrease first during the titration of HCl against NaOH?</p>
+                    <span class="card-flip-prompt">Click to reveal answer &rarr;</span>
+                  </div>
+                  <div class="flashcard-back">
+                    <p class="card-answer" id="fc1-answer">The highly mobile H<sup>+</sup> ions of HCl are gradually neutralized and replaced by slower, heavier Na<sup>+</sup> ions from the NaOH solution, causing a drop in overall conductance before the equivalence point.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flashcard-controls">
+                <button class="btn" onclick="prevFlashcard(1)">Prev</button>
+                <span class="card-counter" id="fc1-counter">1 / 5</span>
+                <button class="btn" onclick="nextFlashcard(1)">Next</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp1-quiz" class="sub-tab-pane" style="display:none;">
+            <div class="quiz-wizard" id="quiz1-box">
+              <!-- Content loaded dynamically by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== EXPERIMENT 2: PH METRIC ==================== -->
+        <section id="pane-exp2" class="tab-pane">
+          <div class="exp-hero">
+            <span class="exp-badge">Experiment 02</span>
+            <h2 class="exp-title">pH Metric Titration</h2>
+            <div class="exp-aim"><strong>Aim:</strong> Determination of strength of hydrochloric acid (HCl) using standard sodium hydroxide (NaOH) solution pH-metrically.</div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+              <button class="btn btn-primary" onclick="markExperimentRevised('exp2')">Mark as Revised</button>
+              <button class="btn" onclick="scrollToQuiz('exp2')">Start Quiz</button>
+            </div>
+          </div>
+
+          <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchSubTab('exp2', 'theory', this)">Theory & Reactions</button>
+            <button class="tab-btn" onclick="switchSubTab('exp2', 'procedure', this)">Apparatus & Steps</button>
+            <button class="tab-btn" onclick="switchSubTab('exp2', 'simulator', this)">Simulator & Graph</button>
+            <button class="tab-btn" onclick="switchSubTab('exp2', 'flashcards', this)">Viva Flashcards</button>
+            <button class="tab-btn" onclick="switchSubTab('exp2', 'quiz', this)">10-MCQ Quiz</button>
+          </nav>
+
+          <!-- Exp 2 Sub Tabs -->
+          <div id="exp2-theory" class="sub-tab-pane active">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Core Principles</h3>
+                  <p><strong>pH Concept:</strong> pH is defined as the negative logarithm (base 10) of the hydrogen ion concentration: <strong>pH = -log[H<sup>+</sup>]</strong>.</p>
+                  <p style="margin-top: 0.5rem;"><strong>Instrumentation:</strong> A pH meter is a high-input-impedance voltmeter that measures the potential difference between a <strong>Glass Electrode</strong> (active indicator electrode sensitive to H<sup>+</sup>) and a <strong>Calomel Electrode</strong> (standard reference electrode). Glass electrode potential is given by: E = E° + 0.0592 pH (at 25°C).</p>
+                  
+                  <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>Why does the pH titration curve show an S-shape?</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">1. <strong>Initially:</strong> The solution has a high concentration of free H<sup>+</sup>. Adding NaOH decreases [H<sup>+</sup>], but because pH is a logarithmic function, the decrease in concentration produces small, slow increments in pH.</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">2. <strong>Near Equivalence Point:</strong> When [H<sup>+</sup>] drops to extremely low levels (e.g. 10<sup>-5</sup> M to 10<sup>-9</sup> M), adding just a tiny fraction of a drop of base results in a massive log change in H<sup>+</sup> activity. This causes pH to jump sharply from ~4 to ~10.</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">3. <strong>After Equivalence Point:</strong> Excess OH<sup>-</sup> is added. The change in pH levels off again because [OH<sup>-</sup>] dominates and changes slowly in logs.</p>
+                  </div>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Chemical Reaction</h3>
+                  <div class="reaction-eq">
+                    H<sup>+</sup>(aq) + OH<sup>-</sup>(aq) &rarr; H<sub>2</sub>O(l)
+                  </div>
+                  <p style="font-size: 0.85rem; color: var(--text-secondary);">The net ionic equation is simply the neutralization of hydronium and hydroxide ions to form unionized water.</p>
+                </div>
+              </div>
+
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">1-Minute Summary</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>Indicator:</strong> Combined glass-reference electrode.</li>
+                    <li><strong>Calibrate with:</strong> Standard buffers (pH 4.0, 7.0, and 9.2).</li>
+                    <li><strong>Curve shape:</strong> Sigmoidal (S-shaped). Inflection point = endpoint.</li>
+                    <li><strong>Derivative Graph:</strong> Peak of &Delta;pH/&Delta;V vs V gives the exact endpoint volume.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp2-procedure" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Apparatus & Reagents</h3>
+                  <p><strong>Apparatus:</strong> Digital pH meter, Combined Glass electrode, Burette, Pipette, Beakers, Magnetic stirrer, Wash bottle.</p>
+                  <p style="margin-top: 0.5rem;"><strong>Reagents:</strong> Hydrochloric acid (~0.1 N HCl), Standard Sodium Hydroxide (0.1 N NaOH), Buffer tablets (pH 4.0, 7.0, 9.2), Distilled water.</p>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Step-by-Step Procedure</h3>
+                  <ol style="padding-left: 1.25rem; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><strong>Calibrate:</strong> Turn on the pH meter and let it warm up. Standardize it by placing the electrode in pH 7.0 buffer (adjust offset), then pH 4.0 or 9.2 buffer (adjust slope).</li>
+                    <li><strong>Setup Titrand:</strong> Pipette exactly 25 mL of the unknown HCl solution into a clean 100 mL beaker. Rinse the combined electrode and place it in the beaker.</li>
+                    <li><strong>Initial Reading:</strong> Record the initial pH of the solution before adding any NaOH (V = 0 mL). It should be highly acidic (pH ~1 to 2).</li>
+                    <li><strong>Titrate:</strong> Fill the burette with standard NaOH. Add NaOH in 1.0 mL increments initially. Stir gently after each addition and record the pH.</li>
+                    <li><strong>Slow Down Near Endpoint:</strong> As pH begins to rise more quickly (above pH 3.5), reduce the increments to 0.1 mL or 0.2 mL to capture the steep curve.</li>
+                    <li><strong>Post-Endpoint:</strong> Once pH reaches ~10.5, increase increments back to 1.0 mL. Continue until pH is flat (pH ~12, around 5 mL post-equivalence).</li>
+                    <li><strong>Endpoint Detection:</strong> Plot pH vs V, and/or &Delta;pH/&Delta;V vs V to locate the equivalence point.</li>
+                  </ol>
+                </div>
+              </div>
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Precautions</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; color: var(--color-amber);">
+                    <li>Never let the glass electrode membrane dry out; store it in 3M KCl or distilled water.</li>
+                    <li>Do not allow the glass bulb to collide with the beaker walls or magnetic stir bar.</li>
+                    <li>Wash the electrode well with distilled water between transfers.</li>
+                    <li>Do not wipe the glass bulb with tissue; blot it gently to avoid static charges.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp2-simulator" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div class="lab-visualizer">
+                <h3 class="card-title" style="border-bottom:none; margin-bottom:0;">pH Titration Simulator</h3>
+                <div class="beaker-container">
+                  <div class="beaker">
+                    <div class="beaker-liquid" id="sim2-liquid">
+                      <div class="beaker-bubbles"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="digital-meter">
+                  <div class="meter-label">Digital pH Meter</div>
+                  <div class="meter-value" id="sim2-ph">1.20</div>
+                </div>
+
+                <div class="simulator-control">
+                  <div class="slider-label">
+                    <span>NaOH Added: <strong id="sim2-vol-text">0.0 mL</strong></span>
+                    <span>Equivalence ~ 15.0 mL</span>
+                  </div>
+                  <input type="range" class="lab-slider" id="sim2-slider" min="0" max="30" step="0.5" value="0" oninput="updateExp2Sim(this.value)">
+                </div>
+              </div>
+
+              <div class="content-card graph-card">
+                <h3 class="card-title">pH Metric Titration Curve</h3>
+                <div class="graph-svg-wrapper">
+                  <svg viewBox="0 0 200 120" class="graph-svg">
+                    <!-- Grid Lines -->
+                    <line x1="20" y1="10" x2="20" y2="100" stroke="#1e293b" stroke-width="0.5" />
+                    <line x1="20" y1="100" x2="190" y2="100" stroke="#1e293b" stroke-width="0.5" />
+                    <line x1="100" y1="10" x2="100" y2="100" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2" />
+                    <line x1="20" y1="60" x2="190" y2="60" stroke="#1e293b" stroke-width="0.5" stroke-dasharray="2" />
+                    
+                    <!-- Sigmoid Curve -->
+                    <!-- S curve mathematical projection in SVG: start low, flat, rise sharply at x=100, flat high -->
+                    <path d="M 20 95 C 60 92, 85 85, 95 60 C 105 35, 130 18, 180 15" fill="none" stroke="rgba(6, 182, 212, 0.4)" stroke-width="2" />
+                    
+                    <!-- Interactive Dot -->
+                    <circle id="sim2-graph-dot" cx="20" cy="95" r="4" fill="var(--color-rose)" filter="drop-shadow(0 0 4px var(--color-rose))" />
+                    
+                    <!-- Axes Labels -->
+                    <text x="105" y="115" fill="var(--text-secondary)" font-size="7" font-family="sans-serif" text-anchor="middle">Volume of NaOH added (mL)</text>
+                    <text x="8" y="55" fill="var(--text-secondary)" font-size="7" font-family="sans-serif" text-anchor="middle" transform="rotate(-90 8 55)">pH Value</text>
+                    
+                    <text x="105" y="56" fill="var(--color-emerald)" font-size="6" font-family="sans-serif">pH = 7.0</text>
+                  </svg>
+                </div>
+                
+                <div class="content-card" style="padding:0; border:none; box-shadow:none; margin-bottom:0;">
+                  <h4 style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--color-purple);">Calculations & Formula</h4>
+                  <div class="formula-display">
+                    Strength of HCl = (V<sub>3</sub> &times; S) / 25
+                  </div>
+                  <p style="font-size: 0.8rem; color:var(--text-secondary);">Where:<br>
+                    <strong>S</strong> = Strength of standard NaOH (N)<br>
+                    <strong>V<sub>3</sub></strong> = Volume of NaOH at inflection point (mL)<br>
+                    <strong>25</strong> = Volume of HCl sample pipetted (mL)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp2-flashcards" class="sub-tab-pane" style="display:none;">
+            <div class="flashcard-section">
+              <div class="flashcard-container" id="fc2-container" onclick="flipFlashcard(2)">
+                <div class="flashcard">
+                  <div class="flashcard-front">
+                    <span class="card-meta">pH Metric // Q1</span>
+                    <p class="card-question" id="fc2-question">What is a glass electrode and what does it measure?</p>
+                    <span class="card-flip-prompt">Click to reveal answer &rarr;</span>
+                  </div>
+                  <div class="flashcard-back">
+                    <p class="card-answer" id="fc2-answer">A glass electrode is an ion-selective membrane electrode sensitive to H<sup>+</sup> ions. It measures the change in electrical potential difference across its thin glass bulb relative to H<sup>+</sup> concentration in the external solution.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flashcard-controls">
+                <button class="btn" onclick="prevFlashcard(2)">Prev</button>
+                <span class="card-counter" id="fc2-counter">1 / 5</span>
+                <button class="btn" onclick="nextFlashcard(2)">Next</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp2-quiz" class="sub-tab-pane" style="display:none;">
+            <div class="quiz-wizard" id="quiz2-box">
+              <!-- Content loaded dynamically by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== EXPERIMENT 3: ARGENTOMETRY ==================== -->
+        <section id="pane-exp3" class="tab-pane">
+          <div class="exp-hero">
+            <span class="exp-badge">Experiment 03</span>
+            <h2 class="exp-title">Argentometric Method (Mohr's Method)</h2>
+            <div class="exp-aim"><strong>Aim:</strong> Determination of chloride ion content in a given water sample using standard silver nitrate (AgNO<sub>3</sub>) solution.</div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+              <button class="btn btn-primary" onclick="markExperimentRevised('exp3')">Mark as Revised</button>
+              <button class="btn" onclick="scrollToQuiz('exp3')">Start Quiz</button>
+            </div>
+          </div>
+
+          <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchSubTab('exp3', 'theory', this)">Theory & Reactions</button>
+            <button class="tab-btn" onclick="switchSubTab('exp3', 'procedure', this)">Apparatus & Steps</button>
+            <button class="tab-btn" onclick="switchSubTab('exp3', 'simulator', this)">Simulator & Color</button>
+            <button class="tab-btn" onclick="switchSubTab('exp3', 'flashcards', this)">Viva Flashcards</button>
+            <button class="tab-btn" onclick="switchSubTab('exp3', 'quiz', this)">10-MCQ Quiz</button>
+          </nav>
+
+          <!-- Exp 3 Sub Tabs -->
+          <div id="exp3-theory" class="sub-tab-pane active">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Core Principles</h3>
+                  <p><strong>Precipitation Titration:</strong> Chloride ions in water are estimated by titrating against standard <strong>silver nitrate (AgNO<sub>3</sub>)</strong>. As Ag<sup>+</sup> ions are added, they react with Cl<sup>-</sup> to form an insoluble white precipitate of <strong>silver chloride (AgCl)</strong>.</p>
+                  <p style="margin-top: 0.5rem;"><strong>Indicator:</strong> <strong>Potassium chromate (K<sub>2</sub>CrO<sub>4</sub>)</strong> is added. Once all Cl<sup>-</sup> ions are precipitated, the first excess drop of AgNO<sub>3</sub> reacts with chromate ions to form a brick-red precipitate of <strong>silver chromate (Ag<sub>2</sub>CrO<sub>4</sub>)</strong>, signalling the endpoint.</p>
+                  
+                  <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>Why must the pH be strictly neutral (pH 6.5 to 9.0)?</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">1. <strong>If too acidic (pH < 6.5):</strong> Chromate (CrO<sub>4</sub><sup>2-</sup>) is converted to hydrogen chromate and dichromate (Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup>) ions: <br>2CrO<sub>4</sub><sup>2-</sup> + 2H<sup>+</sup> &rarr; Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup> + H<sub>2</sub>O. Silver dichromate is highly soluble, so the red endpoint precipitate does not form, leading to over-estimation.</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">2. <strong>If too basic (pH > 9.0):</strong> Silver ions react with excess hydroxide (OH<sup>-</sup>) to precipitate silver oxide (Ag<sub>2</sub>O) or hydroxide (AgOH), which consumes Silver Nitrate prematurely and yields error: <br>2Ag<sup>+</sup> + 2OH<sup>-</sup> &rarr; 2AgOH &rarr; Ag<sub>2</sub>O&darr; + H<sub>2</sub>O.</p>
+                  </div>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Chemical Reactions</h3>
+                  <div class="reaction-eq">
+                    Ag<sup>+</sup>(aq) + Cl<sup>-</sup>(aq) &rarr; AgCl(s) &darr; (White precipitate)
+                  </div>
+                  <div class="reaction-eq">
+                    2Ag<sup>+</sup>(aq) + CrO<sub>4</sub><sup>2-</sup>(aq) &rarr; Ag<sub>2</sub>CrO<sub>4</sub>(s) &darr; (Brick-red precipitate)
+                  </div>
+                  <p style="font-size: 0.85rem; color: var(--text-secondary);">Note: AgCl (K<sub>sp</sub> = 1.8 &times; 10<sup>-10</sup>) is less soluble than Ag<sub>2</sub>CrO<sub>4</sub> (K<sub>sp</sub> = 1.1 &times; 10<sup>-12</sup> but requires two Ag<sup>+</sup>, meaning AgCl precipitates first).</p>
+                </div>
+              </div>
+
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">1-Minute Summary</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>Titrand:</strong> Water sample (containing Cl<sup>-</sup>)</li>
+                    <li><strong>Titrant:</strong> Standard AgNO<sub>3</sub> (0.02 N or similar)</li>
+                    <li><strong>Indicator:</strong> 5% Potassium Chromate (K<sub>2</sub>CrO<sub>4</sub>)</li>
+                    <li><strong>Endpoint Color:</strong> Yellow (start) &rarr; Brick-red / reddish-brown ppt (end).</li>
+                    <li><strong>Water Quality Limit:</strong> Chloride content above <strong>250 ppm</strong> affects drinking water taste.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp3-procedure" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Apparatus & Reagents</h3>
+                  <p><strong>Apparatus:</strong> Burette, Pipette, Conical flask, Measuring cylinder, Wash bottle.</p>
+                  <p style="margin-top: 0.5rem;"><strong>Reagents:</strong> Standard Silver Nitrate (AgNO<sub>3</sub>) solution (usually 0.02 N), Potassium Chromate indicator solution (5%), Distilled water, Sodium hydrogen carbonate (to adjust pH if needed).</p>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Step-by-Step Procedure</h3>
+                  <ol style="padding-left: 1.25rem; font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><strong>Measure Sample:</strong> Pipette 20 mL (or 50 mL) of the given water sample into a clean 250 mL conical flask.</li>
+                    <li><strong>Verify pH:</strong> Test the pH of the sample. If acidic, add a pinch of solid NaHCO<sub>3</sub> to neutralize it and bring the pH to 7-8.</li>
+                    <li><strong>Add Indicator:</strong> Add 1 mL of 5% potassium chromate indicator. The solution will turn a clear yellow.</li>
+                    <li><strong>Titrate:</strong> Fill the burette with standard AgNO<sub>3</sub>. Titrate the sample slowly with continuous swirling.</li>
+                    <li><strong>White Ppt Phase:</strong> The solution will turn cloudy due to white AgCl precipitate forming. Localized red spots of silver chromate will form and disappear on shaking.</li>
+                    <li><strong>Endpoint Detection:</strong> Continue dropwise addition until a faint, permanent reddish-brown/brick-red tinge or precipitate persists.</li>
+                    <li><strong>Record:</strong> Note down the burette reading. Repeat titration for concordant values.</li>
+                  </ol>
+                </div>
+              </div>
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Precautions</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; color: var(--color-amber);">
+                    <li>Ensure the pH is neutral. Adjust with NaHCO<sub>3</sub> (never use strong acids/bases).</li>
+                    <li>Do not add too much indicator; it can mask the endpoint or precipitate early.</li>
+                    <li>Silver nitrate stains skin and clothing black upon exposure to light. Handle with care.</li>
+                    <li>Perform a blank titration with distilled water if the chloride content is very low.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp3-simulator" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div class="lab-visualizer">
+                <h3 class="card-title" style="border-bottom:none; margin-bottom:0;">Precipitation Simulator</h3>
+                <div class="beaker-container">
+                  <div class="beaker">
+                    <div class="beaker-liquid yellow-indicator" id="sim3-liquid">
+                      <div class="precipitate-particles" id="sim3-precipitate"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="digital-meter">
+                  <div class="meter-label">Precipitation Color</div>
+                  <div class="meter-value" id="sim3-color-text" style="font-size:0.9rem; color:var(--color-amber);">Yellow Solution</div>
+                </div>
+
+                <div class="simulator-control">
+                  <div class="slider-label">
+                    <span>AgNO<sub>3</sub> Added: <strong id="sim3-vol-text">0.0 mL</strong></span>
+                    <span>Endpoint ~ 12.0 mL</span>
+                  </div>
+                  <input type="range" class="lab-slider" id="sim3-slider" min="0" max="25" step="0.5" value="0" oninput="updateExp3Sim(this.value)">
+                </div>
+              </div>
+
+              <div class="content-card">
+                <h3 class="card-title">Chloride Calculation Formula</h3>
+                <p>The concentration of chloride ions in standard parts per million (ppm) is determined as:</p>
+                <div class="formula-display">
+                  Chloride (ppm) = [V &times; N &times; 35.45 &times; 1000] / S
+                </div>
+                <p style="font-size: 0.85rem; color:var(--text-secondary); line-height: 1.6;">Where:<br>
+                  <strong>V</strong> = Volume of AgNO<sub>3</sub> run down (mL) (Titre value - Blank value)<br>
+                  <strong>N</strong> = Normality of silver nitrate solution (eq/L)<br>
+                  <strong>35.45</strong> = Equivalent weight of chloride ion (g/eq)<br>
+                  <strong>1000</strong> = Conversion factor to get milligrams per liter (mg/L = ppm)<br>
+                  <strong>S</strong> = Volume of water sample taken (mL) (usually 20 mL or 50 mL)
+                </p>
+                <div class="highlight-box" style="margin-top: 1rem; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); color: var(--color-amber);">
+                  <strong>Note:</strong> 1 ppm = 1 mg/liter. Normal acceptable drinking water chloride limit is <strong>250 mg/L (ppm)</strong>. High chloride content causes salty taste and corrodes pipelines.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp3-flashcards" class="sub-tab-pane" style="display:none;">
+            <div class="flashcard-section">
+              <div class="flashcard-container" id="fc3-container" onclick="flipFlashcard(3)">
+                <div class="flashcard">
+                  <div class="flashcard-front">
+                    <span class="card-meta">Argentometry // Q1</span>
+                    <p class="card-question" id="fc3-question">Why does silver chloride precipitate before silver chromate starts precipitating?</p>
+                    <span class="card-flip-prompt">Click to reveal answer &rarr;</span>
+                  </div>
+                  <div class="flashcard-back">
+                    <p class="card-answer" id="fc3-answer">Silver chloride (AgCl) has a much lower solubility product ($K_{sp} \approx 1.8 \times 10^{-10}$) than silver chromate ($K_{sp} \approx 1.1 \times 10^{-12}$). Since AgCl requires only one silver ion per formula unit, it reaches its solubility product and precipitates at a much lower Ag<sup>+</sup> concentration.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flashcard-controls">
+                <button class="btn" onclick="prevFlashcard(3)">Prev</button>
+                <span class="card-counter" id="fc3-counter">1 / 5</span>
+                <button class="btn" onclick="nextFlashcard(3)">Next</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp3-quiz" class="sub-tab-pane" style="display:none;">
+            <div class="quiz-wizard" id="quiz3-box">
+              <!-- Content loaded dynamically by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== EXPERIMENT 4: ACID VALUE ==================== -->
+        <section id="pane-exp4" class="tab-pane">
+          <div class="exp-hero">
+            <span class="exp-badge">Experiment 04</span>
+            <h2 class="exp-title">Determination of Acid Value of Oil</h2>
+            <div class="exp-aim"><strong>Aim:</strong> Determination of acid value of a given oil sample by standardizing potassium hydroxide (KOH) with standard oxalic acid.</div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+              <button class="btn btn-primary" onclick="markExperimentRevised('exp4')">Mark as Revised</button>
+              <button class="btn" onclick="scrollToQuiz('exp4')">Start Quiz</button>
+            </div>
+          </div>
+
+          <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchSubTab('exp4', 'theory', this)">Theory & Reactions</button>
+            <button class="tab-btn" onclick="switchSubTab('exp4', 'procedure', this)">Apparatus & Steps</button>
+            <button class="tab-btn" onclick="switchSubTab('exp4', 'simulator', this)">Simulator & Color</button>
+            <button class="tab-btn" onclick="switchSubTab('exp4', 'flashcards', this)">Viva Flashcards</button>
+            <button class="tab-btn" onclick="switchSubTab('exp4', 'quiz', this)">10-MCQ Quiz</button>
+          </nav>
+
+          <!-- Exp 4 Sub Tabs -->
+          <div id="exp4-theory" class="sub-tab-pane active">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Core Principles</h3>
+                  <p><strong>Acid Value:</strong> The number of milligrams of potassium hydroxide (KOH) required to neutralize the free fatty acids present in 1 gram of oil or fat.</p>
+                  <p style="margin-top: 0.5rem;"><strong>Rancidity:</strong> Natural oils and fats are triglycerides (esters of glycerol and fatty acids). During storage, exposure to moisture, light, and heat leads to <strong>hydrolysis</strong> of triglycerides, releasing free fatty acids. High free fatty acid content causes <strong>rancidity</strong> (bad smell and taste). The acid value measures this deterioration.</p>
+                  
+                  <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>Why standardise KOH using oxalic acid?</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">Potassium hydroxide (KOH) is a <strong>secondary standard</strong> because it is highly hygroscopic (absorbs moisture) and reacts with atmospheric CO<sub>2</sub>. Therefore, it cannot be weighed directly to prepare an exact solution. It must be standardized against a stable <strong>primary standard</strong> like <strong>oxalic acid</strong> ($H_2C_2O_4 \cdot 2H_2O$).</p>
+                  </div>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Chemical Reactions</h3>
+                  <p><strong>1. Standardization of KOH (Oxalic Acid vs KOH):</strong></p>
+                  <div class="reaction-eq">
+                    (COOH)<sub>2</sub> + 2KOH &rarr; (COOK)<sub>2</sub> + 2H<sub>2</sub>O
+                  </div>
+                  <p><strong>2. Neutralization of Free Fatty Acids in Oil (e.g., Oleic Acid):</strong></p>
+                  <div class="reaction-eq">
+                    R-COOH + KOH &rarr; R-COOK + H<sub>2</sub>O
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">1-Minute Summary</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>Titrand:</strong> Oil sample dissolved in alcohol-ether mixture</li>
+                    <li><strong>Titrant:</strong> Standardized KOH (~0.1 N or 0.01 N)</li>
+                    <li><strong>Indicator:</strong> Phenolphthalein</li>
+                    <li><strong>Solvent:</strong> Equal volumes of Ethanol and Diethyl Ether (neutralized to phenolphthalein).</li>
+                    <li><strong>Endpoint Color:</strong> Colorless to permanent pale pink (lasting 15 seconds).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp4-procedure" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Apparatus & Reagents</h3>
+                  <p><strong>Apparatus:</strong> Burette, Pipette, Conical flask, Weighing balance, Beakers, Hot water bath.</p>
+                  <p style="margin-top: 0.5rem;"><strong>Reagents:</strong> Oil sample (e.g., coconut, mustard, or olive oil), KOH pellets, Oxalic acid (dihydrate), Neutralized alcohol-ether mixture (1:1 v/v), Phenolphthalein indicator.</p>
+                </div>
+                
+                <div class="content-card">
+                  <h3 class="card-title">Step-by-Step Procedure</h3>
+                  <h4 style="font-size:0.9rem; margin-top:0.5rem; color:var(--color-cyan);">Part A: Standardization of KOH</h4>
+                  <ol style="padding-left: 1.25rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                    <li>Prepare 100 mL of 0.01 N oxalic acid solution (primary standard).</li>
+                    <li>Pipette 10 mL of oxalic acid into a conical flask and add 2 drops of phenolphthalein.</li>
+                    <li>Titrate with prepared KOH from burette until a permanent pale pink color appears. Note volume (V<sub>1</sub>).</li>
+                  </ol>
+                  <h4 style="font-size:0.9rem; color:var(--color-cyan);">Part B: Titration of Oil Sample</h4>
+                  <ol style="padding-left: 1.25rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li>Weigh exactly 5 grams (or 10g) of the given oil sample into a clean 250 mL conical flask. Record weight (W).</li>
+                    <li>Add 50 mL of neutralized alcohol-ether mixture. Warm gently in a water bath if the oil does not dissolve easily.</li>
+                    <li>Add 2-3 drops of phenolphthalein indicator. Shake well.</li>
+                    <li>Titrate with standardized KOH from the burette under vigorous shaking until a pale pink color persists for 15 seconds. Note volume (V).</li>
+                  </ol>
+                </div>
+              </div>
+              <div>
+                <div class="content-card">
+                  <h3 class="card-title">Precautions</h3>
+                  <ul style="padding-left: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; color: var(--color-amber);">
+                    <li>The alcohol-ether solvent mixture must be neutralized before dissolving the oil. Otherwise, the acidic properties of the solvent will result in high acid values.</li>
+                    <li>Vigorous shaking during titration is essential because oil is immiscible with water and reactions occur at interface.</li>
+                    <li>Do not expose the pink endpoint color to open air too long; atmospheric CO<sub>2</sub> neutralizes the excess base and fades the color.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp4-simulator" class="sub-tab-pane" style="display:none;">
+            <div class="content-grid">
+              <div class="lab-visualizer">
+                <h3 class="card-title" style="border-bottom:none; margin-bottom:0;">Oil Acid Titration</h3>
+                <div class="beaker-container">
+                  <div class="beaker">
+                    <!-- Beaker liquid initially has yellow oil droplets at bottom, clear solvent above -->
+                    <div class="beaker-liquid" id="sim4-liquid" style="background-color:rgba(255,255,255,0.02)">
+                      <div class="beaker-bubbles"></div>
+                      <!-- Representing yellow oil layer at bottom -->
+                      <div style="position:absolute; bottom:0; width:100%; height:15px; background-color:rgba(245,158,11,0.35); border-top:1px dashed rgba(245,158,11,0.5);"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="digital-meter">
+                  <div class="meter-label">Solution Color</div>
+                  <div class="meter-value" id="sim4-color-text" style="font-size:0.9rem; color:var(--text-secondary);">Clear/Colorless</div>
+                </div>
+
+                <div class="simulator-control">
+                  <div class="slider-label">
+                    <span>KOH Added: <strong id="sim4-vol-text">0.0 mL</strong></span>
+                    <span>Endpoint ~ 4.5 mL</span>
+                  </div>
+                  <input type="range" class="lab-slider" id="sim4-slider" min="0" max="10" step="0.1" value="0" oninput="updateExp4Sim(this.value)">
+                </div>
+              </div>
+
+              <div class="content-card">
+                <h3 class="card-title">Acid Value Calculations</h3>
+                
+                <p style="font-size:0.9rem;"><strong>Step 1: Normality of KOH (S<sub>1</sub>)</strong></p>
+                <div class="formula-display">
+                  S<sub>1</sub> = (10 &times; 0.01) / V<sub>1</sub>
+                </div>
+                <p style="font-size: 0.8rem; color:var(--text-secondary); margin-bottom:1rem;">Where V<sub>1</sub> is the volume of KOH used to neutralize 10 mL of 0.01 N oxalic acid.</p>
+                
+                <p style="font-size:0.9rem;"><strong>Step 2: Acid Value of Oil</strong></p>
+                <div class="formula-display">
+                  Acid Value = (56.1 &times; V &times; S<sub>1</sub>) / W
+                </div>
+                <p style="font-size: 0.85rem; color:var(--text-secondary); line-height: 1.6;">Where:<br>
+                  <strong>56.1</strong> = Molecular weight of KOH (g/mol). Represents that 1 mL of 1 N KOH contains 56.1 mg of KOH.<br>
+                  <strong>V</strong> = Volume of standard KOH consumed for oil titration (mL)<br>
+                  <strong>S<sub>1</sub></strong> = Strength (Normality) of KOH determined in Step 1 (N)<br>
+                  <strong>W</strong> = Weight of the oil sample taken (grams)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp4-flashcards" class="sub-tab-pane" style="display:none;">
+            <div class="flashcard-section">
+              <div class="flashcard-container" id="fc4-container" onclick="flipFlashcard(4)">
+                <div class="flashcard">
+                  <div class="flashcard-front">
+                    <span class="card-meta">Acid Value // Q1</span>
+                    <p class="card-question" id="fc4-question">Why is a mixture of alcohol and ether used to dissolve the oil sample?</p>
+                    <span class="card-flip-prompt">Click to reveal answer &rarr;</span>
+                  </div>
+                  <div class="flashcard-back">
+                    <p class="card-answer" id="fc4-answer">Oils are triglycerides (esters) which are completely insoluble in water. A 1:1 mixture of ethyl alcohol and diethyl ether dissolves the oil, bringing both the fatty acids and the KOH titrant into a single homogeneous phase for rapid neutralization.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flashcard-controls">
+                <button class="btn" onclick="prevFlashcard(4)">Prev</button>
+                <span class="card-counter" id="fc4-counter">1 / 5</span>
+                <button class="btn" onclick="nextFlashcard(4)">Next</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="exp4-quiz" class="sub-tab-pane" style="display:none;">
+            <div class="quiz-wizard" id="quiz4-box">
+              <!-- Content loaded dynamically by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== REVISION TOOL: CHECKLIST ==================== -->
+        <section id="pane-checklist" class="tab-pane">
+          <div class="exp-hero" style="background: linear-gradient(135deg, #2b1845 0%, #0d0617 100%); border-color: rgba(139, 92, 246, 0.2);">
+            <span class="exp-badge" style="color:#c084fc; background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.2);">Quick Revision</span>
+            <h2 class="exp-title">Night Before Viva Checklist</h2>
+            <div class="exp-aim">Crucial points to verify before you walk into the laboratory. Review and tick them off once understood.</div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+              <button class="btn btn-primary" onclick="resetChecklist()">Reset Checklist</button>
+            </div>
+          </div>
+
+          <div class="content-grid" style="grid-template-columns: 1fr;">
+            <div class="content-card">
+              <h3 class="card-title">High-Yield Checklist</h3>
+              <div class="checklist-container" id="viva-checklist-root">
+                <!-- Checklists injected here by JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== REVISION TOOL: TEACHER MAY ASK ==================== -->
+        <section id="pane-teacher-may-ask" class="tab-pane">
+          <div class="exp-hero" style="background: linear-gradient(135deg, #382414 0%, #0c0805 100%); border-color: rgba(245, 158, 11, 0.2);">
+            <span class="exp-badge" style="color:#fcd34d; background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.2);">Teacher May Ask</span>
+            <h2 class="exp-title">Rapid-Fire Questions & Answers</h2>
+            <div class="exp-aim">Direct, compact answers to high-frequency viva questions asked by external examiners. Click on any question to expand.</div>
+          </div>
+
+          <div class="content-grid" style="grid-template-columns: 1fr;">
+            <div class="content-card">
+              <h3 class="card-title">Interactive Accordion Panel</h3>
+              <div id="accordion-root">
+                <!-- Accordions injected here by JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // ==================== GLOBAL DATA STRUCTURES ====================
+    
+    // Checklists Data
+    const checklistData = [
+      { id: 'chk-1', title: 'Conductivity Definitions', desc: 'Understand conductance G = 1/R (Siemens), specific conductivity (k = cell constant * G), cell constant (l/A).', category: 'Definitions' },
+      { id: 'chk-2', title: 'Grotthuss proton-hopping', desc: 'Know that H+ has extremely high ionic mobility due to proton-hopping through hydrogen-bonded water networks, unlike sodium Na+.', category: 'Definitions' },
+      { id: 'chk-3', title: 'pH logarithmic relation', desc: 'pH = -log10[H+]. Understand why dilution of 0.1 N HCl (pH 1) to 0.01 N HCl (pH 2) is a 10x drop in concentration.', category: 'Definitions' },
+      { id: 'chk-4', title: 'Conductometric Graph V-shape', desc: 'Draw a V graph. Explain why left arm goes down (Na+ replaces H+) and right arm goes up (excess OH- ions).', category: 'Graph shapes' },
+      { id: 'chk-5', title: 'pH Metric Graph S-shape', desc: 'Draw a sigmoidal S graph. Equivalence point is at inflection point (steepest part of curve). Derivative graph shows a peak.', category: 'Graph shapes' },
+      { id: 'chk-6', title: 'Argentometry Reactions', desc: '1. Ag+ + Cl- -> AgCl (white ppt). 2. 2Ag+ + CrO4(2-) -> Ag2CrO4 (brick red ppt indicator endpoint).', category: 'Reactions' },
+      { id: 'chk-7', title: 'Argentometry Neutral pH reason', desc: 'pH must be 6.5 to 9. Acidic converts chromate to dichromate (red ppt fails). Basic precipitates silver as silver hydroxide/oxide.', category: 'Precautions' },
+      { id: 'chk-8', title: 'Acid Value definition', desc: 'Milligrams of KOH needed to neutralize free fatty acids in 1 gram of oil. Measures rancidity/hydrolysis.', category: 'Definitions' },
+      { id: 'chk-9', title: 'KOH Standardization rationale', desc: 'KOH is secondary standard (hygroscopic, absorbs CO2). Standardize against oxalic acid (primary standard).', category: 'Calculations' },
+      { id: 'chk-10', title: 'Acid Value Formula', desc: 'Acid value = (56.1 * V * Normality of KOH) / Weight of oil. 56.1 is molecular weight of KOH.', category: 'Calculations' }
+    ];
+
+    // Accordions Data
+    const accordionData = [
+      {
+        question: "Why does H+ have much higher conductivity than Na+ or K+ ions?",
+        answer: "H+ ions conduct electricity via the <strong>Grotthuss proton-hopping mechanism</strong>. Instead of physically migrating through the solvent, a proton jumps from one water molecule to the next in a hydrogen-bonded network. Na+ and K+ must migrate physically, encountering resistance.",
+        category: "Conductometric",
+        badge: "badge-exp1"
+      },
+      {
+        question: "Can we use indicators like Phenolphthalein in Conductometric titrations?",
+        answer: "No, indicators are unnecessary. We measure physical electrical conductance using a conductivity cell. Indicators tell us pH changes, but here we track changes in ionic mobility and concentration.",
+        category: "Conductometric",
+        badge: "badge-exp1"
+      },
+      {
+        question: "What is Cell Constant and how do you determine it experimentally?",
+        answer: "Cell Constant is the ratio of distance between electrodes to their cross-sectional area (l/A). We determine it by measuring the conductance of a standard solution of potassium chloride (KCl) of known specific conductance: Cell Constant = Specific Conductance / Conductance.",
+        category: "Conductometric",
+        badge: "badge-exp1"
+      },
+      {
+        question: "Why is a glass electrode called an ion-selective electrode?",
+        answer: "It has a thin glass membrane that selectively allows H+ ions in solution to exchange with ions in the membrane surface, creating a potential difference proportional to the logarithm of H+ concentration (pH). It does not respond to other cations like Na+ under normal conditions.",
+        category: "pH Metric",
+        badge: "badge-exp2"
+      },
+      {
+        question: "Why does pH rise so sharply near the equivalence point?",
+        answer: "pH is a logarithmic scale. Near the equivalence point, the concentration of H+ drops to near-neutrality (10<sup>-7</sup> M). Because the scale is logarithmic, the transition from acidic (e.g. pH 4) to basic (e.g. pH 10) takes only a minute fraction of base addition, creating a sudden vertical cliff on the curve.",
+        category: "pH Metric",
+        badge: "badge-exp2"
+      },
+      {
+        question: "Why do we calibrate the pH meter before titration?",
+        answer: "Glass electrode potential changes over time due to aging, temperature, and dehydration. Calibrating with standard buffer solutions (pH 4, 7, 9.2) adjusts the meter's offset and slope settings to ensure accurate measurements.",
+        category: "pH Metric",
+        badge: "badge-exp2"
+      },
+      {
+        question: "Why does AgCl precipitate before Ag2CrO4 during chloride estimation?",
+        answer: "Even though silver chromate has a lower solubility product in terms of absolute values, AgCl has a much lower solubility in water. Silver chloride precipitates when [Ag+][Cl-] exceeds Ksp (1.8 &times; 10<sup>-10</sup>). Ag2CrO4 requires [Ag+]<sup>2</sup>[CrO4<sup>2-</sup>] to exceed Ksp (1.1 &times; 10<sup>-12</sup>), requiring a much higher silver ion concentration. Hence, silver chromate precipitates only after all chloride is consumed.",
+        category: "Argentometry",
+        badge: "badge-exp3"
+      },
+      {
+        question: "What happens if you perform Mohr's titration in highly acidic medium?",
+        answer: "In acidic media, chromate ions (CrO<sub>4</sub><sup>2-</sup>) convert to dichromate: 2CrO<sub>4</sub><sup>2-</sup> + 2H<sup>+</sup> &harr; Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup> + H<sub>2</sub>O. Silver dichromate is highly soluble in water, meaning the reddish-brown silver chromate precipitate will not form at the endpoint. This causes over-titration and error.",
+        category: "Argentometry",
+        badge: "badge-exp3"
+      },
+      {
+        question: "Why does the pink color of the endpoint in acid value titrations fade after 30 seconds?",
+        answer: "The solution is in contact with atmospheric carbon dioxide. CO<sub>2</sub> is an acidic oxide that dissolves in water to form carbonic acid. This acid neutralizes the slight excess of KOH that was causing the pink phenolphthalein endpoint, making it colorless again.",
+        category: "Acid Value",
+        badge: "badge-exp4"
+      },
+      {
+        question: "What is rancidity, and how is it related to acid value?",
+        answer: "Rancidity is the oxidation or hydrolysis of fats and oils leading to an unpleasant smell and taste. Hydrolysis releases free fatty acids from triglycerides. Since the acid value measures the milligrams of KOH required to neutralize these free fatty acids, a higher acid value indicates higher degradation and rancidity.",
+        category: "Acid Value",
+        badge: "badge-exp4"
+      }
+    ];
+
+    // Quiz Questions (10 per experiment, 40 total)
+    const quizData = {
+      exp1: [
+        { q: "What is the relationship between conductance (G) and resistance (R)?", o: ["G = R", "G = 1/R", "G = R^2", "G = log(R)"], a: 1, e: "Conductance is the reciprocal of resistance: G = 1/R." },
+        { q: "What is the SI unit of conductance?", o: ["Ohm", "Siemens", "Ampere", "Volt"], a: 1, e: "Siemens (S) or mho (ohm^-1) is the SI unit of conductance." },
+        { q: "Why does HCl conductance decrease initially when NaOH is added?", o: ["H+ ions are neutralised and replaced by slower Na+ ions", "NaOH decreases the temperature", "Water molecule conductivity is zero", "Chlorides precipitate"], a: 0, e: "Fast-moving H+ ions (mobility 350) are neutralized and replaced by slower Na+ ions (mobility 50), dropping conductance." },
+        { q: "Why does conductance rise sharply after the equivalence point in HCl vs NaOH titration?", o: ["Excess H+ ions", "Excess Na+ ions", "Excess highly mobile OH- ions", "NaCl ionization increases"], a: 2, e: "After neutralizing all HCl, adding NaOH adds excess highly mobile OH- ions (mobility 198), raising conductance rapidly." },
+        { q: "How is Specific Conductance (κ) related to Cell Constant (l/A)?", o: ["κ = G * (A/l)", "κ = G * (l/A)", "κ = R * (l/A)", "κ = 1 / (G * (l/A))"], a: 1, e: "Specific conductance κ = G * (l/A) where (l/A) is the cell constant." },
+        { q: "What is the shape of the titration curve for conductometric titration of a strong acid vs strong base?", o: ["S-shape", "V-shape", "Flat line", "Bell curve"], a: 1, e: "A strong acid-strong base titration produces a V-shaped curve with the minimum representing the equivalence point." },
+        { q: "What is the unit of Specific Conductance?", o: ["S cm^-1", "Ohm cm", "S cm^2 eq^-1", "Siemens"], a: 0, e: "Specific Conductance unit is S cm^-1 (or Ω^-1 cm^-1)." },
+        { q: "Which of the following has the highest ionic mobility in aqueous solution?", o: ["Na+", "K+", "OH-", "H+"], a: 3, e: "H+ has the highest mobility because of Grotthuss proton-hopping." },
+        { q: "What happens to the conductance of an electrolyte as temperature increases?", o: ["Decreases", "Increases", "Remains constant", "First decreases then increases"], a: 1, e: "Increasing temperature decreases viscosity and increases ionic velocities, increasing conductance." },
+        { q: "How is the cell constant determined experimentally?", o: ["Measuring cell dimensions with calipers", "Using standard KCl solution of known specific conductance", "Using standard NaOH", "Titrating standard HCl"], a: 1, e: "Cell constant is measured by calibrating with KCl solution of known specific conductance (κ): Cell Constant = κ / Measured Conductance." }
+      ],
+      exp2: [
+        { q: "What is the mathematical definition of pH?", o: ["log[H+]", "-log[H+]", "ln[H+]", "1/[H+]"], a: 1, e: "pH = -log10[H+] (negative logarithm of hydrogen ion concentration)." },
+        { q: "Which electrode is commonly used as the active indicator electrode in pH meters?", o: ["Calomel electrode", "Glass electrode", "Platinum electrode", "Hydrogen electrode"], a: 1, e: "The glass electrode is the indicator electrode whose potential changes selectively with H+ activity." },
+        { q: "Which reference electrode is typically combined with the glass electrode in a pH probe?", o: ["Silver-Silver Chloride / Calomel", "Platinum", "Glass", "Zinc"], a: 0, e: "Calomel or Ag/AgCl electrodes are used as reference electrodes to maintain constant potential." },
+        { q: "What is the theoretical pH at the equivalence point for HCl vs NaOH titration at 25°C?", o: ["1.0", "7.0", "14.0", "4.0"], a: 1, e: "Neutralization of a strong acid and strong base yields a neutral salt (NaCl), so pH = 7.0 at 25°C." },
+        { q: "Why is the pH curve relatively flat at the very beginning of titrating HCl with NaOH?", o: ["Buffer action of water", "Logarithmic scale means high H+ concentration changes yield small pH changes", "Glass electrode is insensitive below pH 3", "Neutralization hasn't started"], a: 1, e: "Because pH is logarithmic, reducing [H+] from 0.1M (pH 1) to 0.01M (pH 2) requires neutralizing 90% of the acid." },
+        { q: "In a first-derivative plot (ΔpH/ΔV vs V) of a pH metric titration, what represents the equivalence point?", o: ["A flat minimum", "A sharp maximum peak", "A zero-crossing point", "An inflection curve"], a: 1, e: "The first derivative represents the rate of change of pH. The rate is highest at the endpoint, showing a sharp peak." },
+        { q: "What standard buffer values are commonly used to calibrate a pH meter?", o: ["pH 1.0 and 14.0", "pH 4.0, 7.0, and 9.2", "pH 5.0 and 8.0", "pH 0.0 and 10.0"], a: 1, e: "Buffers of pH 4, 7, and 9.2 (or 10) calibrate the acidity, neutrality, and alkalinity ranges of the meter." },
+        { q: "What equation relates the potential of a glass electrode to pH?", o: ["Nernst Equation (E = E° - 0.0592 pH)", "Arrhenius Equation", "Bragg Equation", "Henderson-Hasselbalch"], a: 0, e: "The Nernst equation describes potential vs pH: E = E° - 0.0592 pH (at 25°C)." },
+        { q: "Why must the glass electrode bulb be kept wet during storage?", o: ["To prevent glass cracking", "To maintain the hydrated gel layer on the glass membrane", "To keep it clean", "To prevent electrical shorts"], a: 1, e: "A hydrated gel layer on the glass surface is essential for H+ ion exchange to establish potential." },
+        { q: "If the equivalence point of 25 mL HCl requires 15 mL of 0.1 N NaOH, what is the strength of HCl?", o: ["0.06 N", "0.15 N", "0.03 N", "0.10 N"], a: 0, e: "S1 = (V2 * S2) / V1 = (15 * 0.1) / 25 = 0.06 N." }
+      ],
+      exp3: [
+        { q: "Mohr's method of argentometric titration belongs to which category?", o: ["Acid-base titration", "Complexometric titration", "Precipitation titration", "Redox titration"], a: 2, e: "Argentometry is based on forming insoluble precipitates (AgCl)." },
+        { q: "What indicator is used in Mohr's method for chloride estimation?", o: ["Phenolphthalein", "Potassium chromate (K2CrO4)", "Starch", "Methyl orange"], a: 1, e: "Potassium chromate is the indicator, forming red silver chromate at the endpoint." },
+        { q: "What is the chemical composition of the brick-red precipitate formed at the endpoint?", o: ["AgCl", "Ag2CrO4", "AgOH", "KNO3"], a: 1, e: "Silver chromate (Ag2CrO4) is the brick-red precipitate." },
+        { q: "Why must the pH in Mohr's method be kept neutral (pH 6.5 - 9.0)?", o: ["Acidic pH converts indicator to dichromate; basic pH precipitates Ag+ as silver oxide/hydroxide", "Acid dissolves AgCl", "Basic pH decomposes AgNO3", "Indicator turns red in acid"], a: 0, e: "In acid, chromate converts to soluble dichromate. In base, silver precipitates as silver oxide/hydroxide, causing errors." },
+        { q: "What chemical is added to neutralize an acidic chloride water sample before Mohr's titration?", o: ["Hydrochloric acid", "Sodium hydroxide", "Sodium hydrogen carbonate (NaHCO3)", "Ammonium hydroxide"], a: 2, e: "NaHCO3 is a mild buffer base used to neutralize acid without overshooting into highly basic territory." },
+        { q: "Why does AgCl precipitate before Ag2CrO4?", o: ["AgCl has a lower solubility (lower Ksp concentration threshold)", "Ag2CrO4 does not react with Ag+", "Chromate is added late", "AgCl is highly stable in acid"], a: 0, e: "AgCl precipitates at lower Ag+ concentrations than Ag2CrO4 because of its solubility thresholds." },
+        { q: "What is the equivalent weight of chloride ion used in calculations?", o: ["17.0 g/eq", "35.45 g/eq", "107.87 g/eq", "58.5 g/eq"], a: 1, e: "Equivalent weight of chlorine (Cl-) is 35.45 g/eq." },
+        { q: "Above what limit does chloride content affect the taste of drinking water?", o: ["10 ppm", "100 ppm", "250 ppm", "1000 ppm"], a: 2, e: "Chloride above 250 ppm (mg/L) imparts a salty taste and is regulated by drinking water standards." },
+        { q: "Silver nitrate stains skin black because:", o: ["It is a dye", "It is reduced to metallic silver by organic matter and light", "It is highly acidic", "It dehydrates cells"], a: 1, e: "Silver ions are reduced by skin proteins and light to form dark, metallic silver deposits." },
+        { q: "What is the expression for chloride content in ppm?", o: ["(V * N * 35.45 * 1000) / Sample Volume", "V * N * 35.45 / Sample Volume", "Sample Volume / (V * N * 35.45)", "V * N * 56.1 * 1000 / Sample Volume"], a: 0, e: "ppm = (V * N * 35.45 * 1000) / S where V is AgNO3 volume and S is sample volume." }
+      ],
+      exp4: [
+        { q: "How is the acid value of oil defined?", o: ["Grams of KOH required to saponify 1 g of oil", "Milligrams of KOH required to neutralize free fatty acids in 1 g of oil", "Milligrams of NaOH required to neutralize 100 g of oil", "Grams of oxalic acid in oil"], a: 1, e: "Acid value is the milligrams of KOH required to neutralize the free fatty acids present in 1 gram of oil." },
+        { q: "Why do oils develop free fatty acids during storage?", o: ["Triglycerides undergo hydrolysis due to moisture and light", "Oil absorbs CO2 from the air", "Addition of alcohols", "Oxidation of glycerol"], a: 0, e: "Exposure to moisture/air hydrolyzes triglycerides (esters) into glycerol and free fatty acids, causing rancidity." },
+        { q: "Why is KOH considered a secondary standard?", o: ["It is highly stable", "It is hygroscopic and absorbs atmospheric carbon dioxide", "It has a very high molecular weight", "It is toxic"], a: 1, e: "KOH absorbs water and reacts with CO2 (forming K2CO3), so its exact weight is unreliable. It must be standardized." },
+        { q: "Which primary standard is used to standardize the KOH solution?", o: ["Hydrochloric acid", "Oxalic acid", "Sodium carbonate", "Sodium chloride"], a: 1, e: "Oxalic acid is a stable, high-purity primary standard used to find the exact concentration of KOH." },
+        { q: "What indicator is used in the titration of oil against KOH?", o: ["Methyl orange", "Potassium chromate", "Phenolphthalein", "Starch"], a: 2, e: "Phenolphthalein is used, showing a colorless-to-pink transition at pH ~8.3." },
+        { q: "What solvent is used to dissolve the oil sample for titration?", o: ["Pure water", "1:1 Alcohol-Ether mixture", "Concentrated acid", "Acetone"], a: 1, e: "An alcohol-ether mixture is used because oil is insoluble in water. The alcohol dissolves KOH and ether dissolves the oil." },
+        { q: "Why must the solvent mixture be neutralized before dissolving the oil?", o: ["To prevent oil decomposition", "To ensure solvent fatty acids do not consume the titrant, falsely raising the acid value", "To speed up the reaction", "To keep pH at 7"], a: 1, e: "Solvents may contain trace acidity. Neutralizing them first prevents them from altering the oil's titration volume." },
+        { q: "What does the number 56.1 represent in the acid value calculation formula?", o: ["Density of oil", "Molecular weight of KOH (g/mol)", "Equivalent weight of oxalic acid", "Volume of solvent"], a: 1, e: "56.1 g/mol is the molecular weight of KOH. The formula converts milliequivalents of titrant to milligrams of KOH." },
+        { q: "What is the endpoint color change in the oil titration?", o: ["Colorless to pale pink (stable for 15s)", "Pink to colorless", "Yellow to red", "Blue to green"], a: 0, e: "Neutralizing all free acids leaves the first excess drop of KOH to turn phenolphthalein pale pink." },
+        { q: "A high acid value in an edible oil indicates:", o: ["Freshness and high quality", "Triglyceride decomposition and rancidity", "High concentration of vitamins", "Low boiling point"], a: 1, e: "High acid values indicate breakdown of oil into free fatty acids, representing rancidity and poor quality." }
+      ]
+    };
+
+    // Flashcards Data (5 per experiment)
+    const flashcardData = {
+      exp1: [
+        { q: "Why does conductance decrease first during the titration of HCl against NaOH?", a: "The highly mobile H<sup>+</sup> ions of HCl are neutralized and replaced by slower, heavier Na<sup>+</sup> ions from the NaOH solution, causing a drop in overall conductance before the equivalence point." },
+        { q: "What is specific conductance and its units?", a: "Specific conductance (&kappa;) is the conductance of 1 cm<sup>3</sup> of an electrolyte solution. Its unit is Siemens per centimeter (S cm<sup>-1</sup>)." },
+        { q: "What is the Cell Constant?", a: "Cell constant is the ratio of distance between electrodes to their area of cross-section (l/A). It is expressed in cm<sup>-1</sup>." },
+        { q: "Why does conductance increase after the endpoint?", a: "After the neutralization of all HCl, further addition of NaOH adds excess highly mobile OH<sup>-</sup> ions ($198\,\text{S}$) and Na<sup>+</sup> ions, causing conductance to rise sharply." },
+        { q: "Why is conductometric titration preferred over indicator titration?", a: "It can be used for colored, turbid, or highly dilute solutions, and for titrating weak acids/bases where visual indicators fail to give a sharp endpoint." }
+      ],
+      exp2: [
+        { q: "What is a glass electrode and what does it measure?", a: "A glass electrode is an ion-selective membrane electrode sensitive to H<sup>+</sup> ions. It measures the change in electrical potential difference across its thin glass bulb relative to H<sup>+</sup> concentration in the external solution." },
+        { q: "Why does pH rise so sharply near the equivalence point?", a: "pH is a logarithmic scale. Near the equivalence point, the concentration of H<sup>+</sup> drops to near-neutrality (10<sup>-7</sup> M). Because the scale is logarithmic, the transition from acidic (e.g. pH 4) to basic (e.g. pH 10) takes only a minute fraction of base addition, creating a sudden vertical cliff on the curve." },
+        { q: "Name a reference electrode used in pH measurements.", a: "Saturated Calomel Electrode (SCE) or Silver-Silver Chloride (Ag/AgCl) electrode." },
+        { q: "What calibration buffers are used and why?", a: "Standard buffer solutions of pH 4.0 (acidic), 7.0 (neutral), and 9.2 or 10.0 (alkaline). They calibrate the offset and slope settings of the pH meter to account for electrode variations." },
+        { q: "How do you find the endpoint from a pH metric titration graph?", a: "Locate the inflection point (midpoint of the steep vertical rise) on a pH vs. Volume graph, or locate the peak of a first-derivative graph (&Delta;pH/&Delta;V vs. Volume)." }
+      ],
+      exp3: [
+        { q: "Why does silver chloride precipitate before silver chromate starts precipitating?", a: "Silver chloride (AgCl) has a much lower solubility ($K_{sp} \approx 1.8 \times 10^{-10}$) than silver chromate ($K_{sp} \approx 1.1 \times 10^{-12}$). Since AgCl requires only one silver ion per formula unit, it reaches its solubility product and precipitates at a much lower Ag<sup>+</sup> concentration." },
+        { q: "Why must the pH in Mohr's method be kept neutral (pH 6.5 - 9.0)?", a: "In acidic media, chromate ions (CrO<sub>4</sub><sup>2-</sup>) convert to dichromate: 2CrO<sub>4</sub><sup>2-</sup> + 2H<sup>+</sup> &harr; Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup> + H<sub>2</sub>O. Silver dichromate is highly soluble in water, meaning the reddish-brown silver chromate precipitate will not form at the endpoint. This causes over-titration and error." },
+        { q: "What is the endpoint color change in Mohr's method?", a: "The solution changes from clear yellow (chromate indicator color) to a permanent faint reddish-brown/brick-red precipitate of silver chromate." },
+        { q: "What happens if pH is above 9 or 10?", a: "At high pH, silver ions (Ag<sup>+</sup>) react with excess hydroxide ions (OH<sup>-</sup>) to form a dark precipitate of silver hydroxide/oxide, consuming AgNO<sub>3</sub> prematurely." },
+        { q: "What is the chloride limit in drinking water and why does it matter?", a: "The acceptable limit is 250 ppm (mg/L). Excess chloride imparts a salty taste and corrodes metallic pipes and water heaters." }
+      ],
+      exp4: [
+        { q: "Why is a mixture of alcohol and ether used to dissolve the oil sample?", a: "Oils are triglycerides (esters) which are completely insoluble in water. A 1:1 mixture of ethyl alcohol and diethyl ether dissolves the oil, bringing both the fatty acids and the KOH titrant into a single homogeneous phase for rapid neutralization." },
+        { q: "What is rancidity, and how is it related to acid value?", a: "Rancidity is the oxidation or hydrolysis of fats and oils leading to an unpleasant smell and taste. Hydrolysis releases free fatty acids from triglycerides. Since the acid value measures the milligrams of KOH required to neutralize these free fatty acids, a higher acid value indicates higher degradation and rancidity." },
+        { q: "Why is KOH standardized against oxalic acid?", a: "KOH is a secondary standard because it is hygroscopic (absorbs water) and reacts with atmospheric CO<sub>2</sub>. It must be standardized against a primary standard (oxalic acid) which is stable and can be weighed precisely." },
+        { q: "Explain the role of phenolphthalein in oil titration.", a: "Phenolphthalein is an acid-base indicator. It is colorless in the acidic oil solution and turns pale pink at pH ~8.3 once all free fatty acids are neutralized by the added KOH." },
+        { q: "What precautions must be taken regarding the alcohol-ether solvent?", a: "The solvent mixture must be neutralized using dilute KOH with phenolphthalein indicator *before* adding the oil. This ensures that any acidic impurities in the solvent do not consume titrant and falsely inflate the oil's acid value." }
+      ]
+    };
+
+    // ==================== STATE MANAGEMENT ====================
+    let state = {
+      activeTab: 'exp1',
+      completion: { exp1: false, exp2: false, exp3: false, exp4: false },
+      checklist: [],
+      quizScore: { exp1: null, exp2: null, exp3: null, exp4: null },
+      flashcardIndexes: { exp1: 0, exp2: 0, exp3: 0, exp4: 0 },
+      flashcardFlipped: false,
+      currentQuizQuestions: [],
+      currentQuizIndex: 0,
+      currentQuizAnswers: [],
+      quizCompleted: false
+    };
+
+    // Load State from localStorage
+    function loadState() {
+      const saved = localStorage.getItem('chemistry_viva_state');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          state.completion = parsed.completion || state.completion;
+          state.checklist = parsed.checklist || state.checklist;
+          state.quizScore = parsed.quizScore || state.quizScore;
+        } catch (e) {
+          console.error("Error loading localStorage state", e);
+        }
+      }
+      updateUIElements();
+    }
+
+    // Save State to localStorage
+    function saveState() {
+      localStorage.setItem('chemistry_viva_state', JSON.stringify({
+        completion: state.completion,
+        checklist: state.checklist,
+        quizScore: state.quizScore
+      }));
+      updateOverallProgress();
+    }
+
+    // ==================== NAVIGATION & TAB ACTIONS ====================
+    
+    function switchMainTab(tabId) {
+      // Hide search overlay if visible
+      document.getElementById('search-overlay-panel').classList.remove('visible');
+      document.getElementById('search-box').value = '';
+
+      // Reset Active Class on Sidebar
+      const menuItems = document.querySelectorAll('.sidebar .menu-item');
+      menuItems.forEach(item => item.classList.remove('active'));
+
+      // Find which menu item matches this tabId
+      let menuIndex = 0;
+      if (tabId === 'exp1') menuIndex = 0;
+      else if (tabId === 'exp2') menuIndex = 1;
+      else if (tabId === 'exp3') menuIndex = 2;
+      else if (tabId === 'exp4') menuIndex = 3;
+      else if (tabId === 'checklist') menuIndex = 4;
+      else if (tabId === 'teacher-may-ask') menuIndex = 5;
+      
+      menuItems[menuIndex].classList.add('active');
+
+      // Hide all main panes
+      const panes = document.querySelectorAll('.tab-pane');
+      panes.forEach(pane => pane.classList.remove('active'));
+
+      // Show requested pane
+      document.getElementById(`pane-${tabId}`).classList.add('active');
+      state.activeTab = tabId;
+
+      // Update Header Title
+      const headerTitle = document.getElementById('dashboard-header-title');
+      if (tabId === 'exp1') headerTitle.innerText = "Conductometric Titration";
+      else if (tabId === 'exp2') headerTitle.innerText = "pH Metric Titration";
+      else if (tabId === 'exp3') headerTitle.innerText = "Argentometric Titration";
+      else if (tabId === 'exp4') headerTitle.innerText = "Acid Value of Oil";
+      else if (tabId === 'checklist') headerTitle.innerText = "Night Before Viva Checklist";
+      else if (tabId === 'teacher-may-ask') headerTitle.innerText = "Teacher May Ask";
+
+      // Reset flashcard flipped state
+      state.flashcardFlipped = false;
+      const cardContainers = document.querySelectorAll('.flashcard-container');
+      cardContainers.forEach(container => container.classList.remove('flipped'));
+
+      // If switching to an experiment, load its quiz and flashcard index
+      if (tabId.startsWith('exp')) {
+        updateFlashcardUI(tabId);
+        initQuiz(tabId);
+      }
+    }
+
+    function switchSubTab(expId, subTabName, btnElement) {
+      // Remove active from all sub tabs of this experiment
+      const subTabsNav = btnElement.parentElement;
+      const subTabButtons = subTabsNav.querySelectorAll('.tab-btn');
+      subTabButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Add active to clicked button
+      btnElement.classList.add('active');
+
+      // Hide all sub tab contents
+      const subTabPanes = document.querySelectorAll(`#pane-${expId} .sub-tab-pane`);
+      subTabPanes.forEach(pane => pane.style.display = 'none');
+
+      // Show the selected sub tab content
+      document.getElementById(`${expId}-${subTabName}`).style.display = 'block';
+
+      // Reset flashcard flip if switching to flashcards
+      if (subTabName === 'flashcards') {
+        state.flashcardFlipped = false;
+        document.getElementById(`fc${expId.slice(-1)}-container`).classList.remove('flipped');
+        updateFlashcardUI(expId);
+      }
+    }
+
+    // ==================== PROGRESS TRACKER ====================
+    
+    function toggleExperimentCompleted(expId, event) {
+      if (event) event.stopPropagation(); // Avoid switching tabs when checking box
+      state.completion[expId] = !state.completion[expId];
+      saveState();
+      updateUIElements();
+    }
+
+    function markExperimentRevised(expId) {
+      state.completion[expId] = true;
+      saveState();
+      updateUIElements();
+      alert(`Experiment marked as revised! Progress updated on the sidebar.`);
+    }
+
+    function updateOverallProgress() {
+      let completedCount = 0;
+      for (let key in state.completion) {
+        if (state.completion[key]) completedCount++;
+      }
+      const percentage = Math.round((completedCount / 4) * 100);
+      
+      document.getElementById('overall-percentage').innerText = `${percentage}%`;
+      document.getElementById('overall-progress-fill').style.width = `${percentage}%`;
+      document.getElementById('overall-status-text').innerText = `${completedCount}/4 Completed`;
+    }
+
+    function updateUIElements() {
+      // Update sidebar checkbox styles
+      for (let key in state.completion) {
+        const checkbox = document.getElementById(`check-${key}`);
+        if (checkbox) {
+          if (state.completion[key]) {
+            checkbox.classList.add('checked');
+          } else {
+            checkbox.classList.remove('checked');
+          }
+        }
+      }
+      updateOverallProgress();
+    }
+
+    function resetAllProgress() {
+      if (confirm("Are you sure you want to reset all revision checklists and quiz scores?")) {
+        state.completion = { exp1: false, exp2: false, exp3: false, exp4: false };
+        state.checklist = [];
+        state.quizScore = { exp1: null, exp2: null, exp3: null, exp4: null };
+        saveState();
+        updateUIElements();
+        
+        // Reload current view contents to reflect reset
+        if (state.activeTab.startsWith('exp')) {
+          initQuiz(state.activeTab);
+        } else if (state.activeTab === 'checklist') {
+          renderChecklist();
+        }
+        
+        // Reset check inputs on UI
+        const checkInputs = document.querySelectorAll('#viva-checklist-root input[type="checkbox"]');
+        checkInputs.forEach(input => input.checked = false);
+        const checkCards = document.querySelectorAll('.checklist-item');
+        checkCards.forEach(card => card.classList.remove('checked'));
+      }
+    }
+
+    // ==================== SIMULATORS ====================
+    
+    // Experiment 1: Conductometric
+    function updateExp1Sim(val) {
+      const vol = parseFloat(val);
+      document.getElementById('sim1-vol-text').innerText = `${vol.toFixed(1)} mL`;
+      
+      // Conductance curve logic:
+      // Starts at 25 mS. Drops linearly to 5 mS at vol = 15.0 mL.
+      // Rises linearly to 22 mS at vol = 30 mL.
+      let cond = 0;
+      if (vol <= 15.0) {
+        cond = 25.0 - (vol / 15.0) * 20.0;
+      } else {
+        cond = 5.0 + ((vol - 15.0) / 15.0) * 17.0;
+      }
+      
+      document.getElementById('sim1-conductance').innerText = cond.toFixed(2);
+      
+      // Update beaker height/bubble effect
+      const liquid = document.getElementById('sim1-liquid');
+      liquid.style.height = `${50 + (vol / 30) * 20}%`;
+      
+      // Update graph dot position
+      // SVG coordinates: Width 200, Height 120
+      // X-axis: 0 mL -> 20 px, 30 mL -> 180 px
+      // Y-axis: 25 mS -> 20 px, 5 mS -> 90 px, 22 mS -> 30 px
+      const dotX = 20 + (vol / 30) * 160;
+      let dotY = 0;
+      if (vol <= 15.0) {
+        dotY = 20 + (vol / 15.0) * 70; // 20 down to 90
+      } else {
+        dotY = 90 - ((vol - 15.0) / 15.0) * 60; // 90 up to 30
+      }
+      
+      const graphDot = document.getElementById('sim1-graph-dot');
+      graphDot.setAttribute('cx', dotX);
+      graphDot.setAttribute('cy', dotY);
+    }
+
+    // Experiment 2: pH Metric
+    function updateExp2Sim(val) {
+      const vol = parseFloat(val);
+      document.getElementById('sim2-vol-text').innerText = `${vol.toFixed(1)} mL`;
+      
+      // Sigmoidal pH Curve Logic
+      // pH starts at 1.2. Equivalence point at 15.0 mL (pH = 7.0).
+      // Equation: pH = 1.2 + 10.8 / (1 + e^(-0.8 * (vol - 15.0)))
+      const ph = 1.2 + 10.8 / (1 + Math.exp(-0.8 * (vol - 15.0)));
+      
+      document.getElementById('sim2-ph').innerText = ph.toFixed(2);
+      
+      // Update beaker height
+      const liquid = document.getElementById('sim2-liquid');
+      liquid.style.height = `${50 + (vol / 30) * 20}%`;
+      
+      // Update graph dot position
+      // X-axis: 0 mL -> 20 px, 30 mL -> 180 px
+      // Y-axis: pH 1 -> 95 px, pH 7 -> 60 px, pH 12 -> 15 px
+      // Map pH linearly onto Y from 95 to 15 (80 pixels spread)
+      // Y = 95 - ((ph - 1.2) / (12 - 1.2)) * 80
+      const dotX = 20 + (vol / 30) * 160;
+      const dotY = 95 - ((ph - 1.2) / 10.8) * 80;
+      
+      const graphDot = document.getElementById('sim2-graph-dot');
+      graphDot.setAttribute('cx', dotX);
+      graphDot.setAttribute('cy', dotY);
+    }
+
+    // Experiment 3: Argentometric Color Change
+    function updateExp3Sim(val) {
+      const vol = parseFloat(val);
+      document.getElementById('sim3-vol-text').innerText = `${vol.toFixed(1)} mL`;
+      
+      const liquid = document.getElementById('sim3-liquid');
+      const ppt = document.getElementById('sim3-precipitate');
+      const label = document.getElementById('sim3-color-text');
+      
+      // Under 12.0 mL: Forms white precipitate (AgCl). Solution stays yellow.
+      // Above 12.0 mL: All Cl- is consumed. Starts precipitating red Ag2CrO4. Solution shifts to reddish-brown.
+      if (vol < 12.0) {
+        liquid.className = "beaker-liquid yellow-indicator";
+        ppt.className = "precipitate-particles"; // white
+        ppt.style.height = `${(vol / 12.0) * 25}px`;
+        label.innerText = "White AgCl Precipitating";
+        label.style.color = "var(--text-primary)";
+      } else {
+        liquid.className = "beaker-liquid red-precipitate";
+        ppt.className = "precipitate-particles silver-chromate"; // dark red
+        // Accumulate both white and red
+        ppt.style.height = `${25 + ((vol - 12.0) / 13.0) * 10}px`;
+        label.innerText = "Brick-Red Endpoint reached!";
+        label.style.color = "var(--color-rose)";
+      }
+    }
+
+    // Experiment 4: Acid Value color change
+    function updateExp4Sim(val) {
+      const vol = parseFloat(val);
+      document.getElementById('sim4-vol-text').innerText = `${vol.toFixed(1)} mL`;
+      
+      const liquid = document.getElementById('sim4-liquid');
+      const label = document.getElementById('sim4-color-text');
+      
+      // Endpoint is at 4.5 mL. Under that, it is colorless. Above that, it shifts to permanent pink.
+      if (vol < 4.5) {
+        liquid.className = "beaker-liquid";
+        label.innerText = "Clear / Neutralizing";
+        label.style.color = "var(--text-secondary)";
+      } else {
+        liquid.className = "beaker-liquid pink";
+        label.innerText = "Pale Pink (Endpoint)";
+        label.style.color = "var(--color-rose)";
+      }
+    }
+
+    // ==================== ACTIVE RECALL: FLASHCARDS ====================
+    
+    function flipFlashcard(expNum) {
+      const expId = `exp${expNum}`;
+      state.flashcardFlipped = !state.flashcardFlipped;
+      
+      const container = document.getElementById(`fc${expNum}-container`);
+      if (state.flashcardFlipped) {
+        container.classList.add('flipped');
+      } else {
+        container.classList.remove('flipped');
+      }
+    }
+
+    function updateFlashcardUI(expId) {
+      const expNum = expId.slice(-1);
+      const index = state.flashcardIndexes[expId];
+      const cards = flashcardData[expId];
+      const currentCard = cards[index];
+      
+      // Set text
+      document.getElementById(`fc${expNum}-question`).innerHTML = currentCard.q;
+      document.getElementById(`fc${expNum}-answer`).innerHTML = currentCard.a;
+      document.getElementById(`fc${expNum}-counter`).innerText = `${index + 1} / ${cards.length}`;
+      
+      // Update meta tag
+      const meta = document.querySelector(`#fc${expNum}-container .card-meta`);
+      if (meta) {
+        let titleName = "";
+        if (expId === 'exp1') titleName = "Conductometric";
+        else if (expId === 'exp2') titleName = "pH Metric";
+        else if (expId === 'exp3') titleName = "Argentometry";
+        else if (expId === 'exp4') titleName = "Acid Value";
+        meta.innerText = `${titleName} // Q${index + 1}`;
+      }
+    }
+
+    function nextFlashcard(expNum) {
+      const expId = `exp${expNum}`;
+      state.flashcardIndexes[expId] = (state.flashcardIndexes[expId] + 1) % flashcardData[expId].length;
+      state.flashcardFlipped = false;
+      document.getElementById(`fc${expNum}-container`).classList.remove('flipped');
+      
+      // Tiny delay to let flip animation reset before swapping content
+      setTimeout(() => {
+        updateFlashcardUI(expId);
+      }, 150);
+    }
+
+    function prevFlashcard(expNum) {
+      const expId = `exp${expNum}`;
+      const count = flashcardData[expId].length;
+      state.flashcardIndexes[expId] = (state.flashcardIndexes[expId] - 1 + count) % count;
+      state.flashcardFlipped = false;
+      document.getElementById(`fc${expNum}-container`).classList.remove('flipped');
+      
+      setTimeout(() => {
+        updateFlashcardUI(expId);
+      }, 150);
+    }
+
+    // ==================== INTERACTIVE QUIZ WIZARD ====================
+    
+    function initQuiz(expId) {
+      state.currentQuizQuestions = quizData[expId];
+      state.currentQuizIndex = 0;
+      state.currentQuizAnswers = [];
+      state.quizCompleted = false;
+      selectedOptionIdx = null;
+      
+      renderQuizQuestion(expId);
+    }
+
+    function renderQuizQuestion(expId) {
+      const expNum = expId.slice(-1);
+      const root = document.getElementById(`quiz${expNum}-box`);
+      
+      if (state.quizCompleted) {
+        renderQuizScore(expId, root);
+        return;
+      }
+      
+      const qIndex = state.currentQuizIndex;
+      const totalQ = state.currentQuizQuestions.length;
+      const currentQ = state.currentQuizQuestions[qIndex];
+      const progressPercent = ((qIndex + 1) / totalQ) * 100;
+      
+      let optionsHtml = '';
+      currentQ.o.forEach((opt, idx) => {
+        optionsHtml += `
+          <div class="quiz-option" id="opt-${idx}" onclick="selectQuizOption(${idx})">
+            <span>${opt}</span>
+            <span class="opt-status-icon"></span>
+          </div>
+        `;
+      });
+
+      root.innerHTML = `
+        <h3 class="card-title">Practice MCQ Test</h3>
+        
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" style="width: ${progressPercent}%"></div>
+        </div>
+
+        <div class="quiz-question-num">Question ${qIndex + 1} of ${totalQ}</div>
+        <div class="quiz-question-text">${currentQ.q}</div>
+        
+        <div class="quiz-options">
+          ${optionsHtml}
+        </div>
+
+        <div class="quiz-feedback" id="quiz-feedback-box">
+          <strong>Explanation:</strong> ${currentQ.e}
+        </div>
+
+        <div class="quiz-controls">
+          <button class="btn btn-primary" id="quiz-action-btn" onclick="submitQuizAnswer('${expId}')" disabled>Verify Answer</button>
+        </div>
+      `;
+    }
+
+    let selectedOptionIdx = null;
+
+    function selectQuizOption(idx) {
+      if (selectedOptionIdx !== null) return; // Answer already verified
+      
+      selectedOptionIdx = idx;
+      
+      // Remove selected class from all
+      const options = document.querySelectorAll('.quiz-option');
+      options.forEach(opt => opt.classList.remove('selected'));
+      
+      // Add selected to clicked
+      document.getElementById(`opt-${idx}`).classList.add('selected');
+      
+      // Enable verify button
+      document.getElementById('quiz-action-btn').removeAttribute('disabled');
+    }
+
+    function submitQuizAnswer(expId) {
+      const qIndex = state.currentQuizIndex;
+      const currentQ = state.currentQuizQuestions[qIndex];
+      const correctIdx = currentQ.a;
+      
+      const actionBtn = document.getElementById('quiz-action-btn');
+      
+      if (actionBtn.innerText === "Verify Answer") {
+        // Evaluate
+        state.currentQuizAnswers.push(selectedOptionIdx);
+        
+        const selectedOption = document.getElementById(`opt-${selectedOptionIdx}`);
+        const correctOption = document.getElementById(`opt-${correctIdx}`);
+        
+        if (selectedOptionIdx === correctIdx) {
+          selectedOption.classList.add('correct');
+        } else {
+          selectedOption.classList.add('incorrect');
+          correctOption.classList.add('correct');
+        }
+        
+        // Show explanation
+        document.getElementById('quiz-feedback-box').classList.add('visible');
+        
+        // Change action button to "Next Question"
+        if (qIndex === state.currentQuizQuestions.length - 1) {
+          actionBtn.innerText = "Finish Quiz";
+        } else {
+          actionBtn.innerText = "Next Question";
+        }
+      } else {
+        // Move to next question
+        selectedOptionIdx = null;
+        state.currentQuizIndex++;
+        if (state.currentQuizIndex >= state.currentQuizQuestions.length) {
+          state.quizCompleted = true;
+        }
+        renderQuizQuestion(expId);
+      }
+    }
+
+    function renderQuizScore(expId, root) {
+      const totalQ = state.currentQuizQuestions.length;
+      let correctCount = 0;
+      
+      state.currentQuizQuestions.forEach((q, idx) => {
+        if (state.currentQuizAnswers[idx] === q.a) {
+          correctCount++;
+        }
+      });
+      
+      // Save high score
+      if (state.quizScore[expId] === null || correctCount > state.quizScore[expId]) {
+        state.quizScore[expId] = correctCount;
+        saveState();
+      }
+
+      root.innerHTML = `
+        <div class="quiz-score-page">
+          <h3 class="card-title" style="border:none; margin-bottom:1.5rem;">Quiz Result</h3>
+          
+          <div class="score-circle">
+            <div class="score-num">${correctCount}</div>
+            <div class="score-total">out of ${totalQ}</div>
+          </div>
+
+          <h4 style="font-size:1.2rem; margin-bottom:0.5rem;">${correctCount >= 8 ? 'Excellent Prep!' : correctCount >= 5 ? 'Good Effort!' : 'Needs Revision'}</h4>
+          <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem;">
+            You scored ${correctCount}/${totalQ} (${Math.round((correctCount/totalQ)*100)}%). <br>
+            Your high score: ${state.quizScore[expId]}/10.
+          </p>
+
+          <div style="display:flex; justify-content:center; gap:1rem;">
+            <button class="btn btn-primary" onclick="initQuiz('${expId}')">Retry Test</button>
+            <button class="btn" onclick="markExperimentRevised('${expId}')">Mark as Completed</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function scrollToQuiz(expId) {
+      const expNum = expId.slice(-1);
+      // Find the subtab button for Quiz
+      const tabBtns = document.querySelectorAll(`#pane-${expId} .tabs-nav .tab-btn`);
+      const quizBtn = tabBtns[4]; // 5th button
+      switchSubTab(expId, 'quiz', quizBtn);
+      
+      // Scroll to element
+      const element = document.getElementById(`quiz${expNum}-box`);
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ==================== CHECKLIST & ACCORDION RENDERERS ====================
+    
+    function renderChecklist() {
+      const root = document.getElementById('viva-checklist-root');
+      root.innerHTML = '';
+      
+      checklistData.forEach(item => {
+        const isChecked = state.checklist.includes(item.id);
+        const itemCard = document.createElement('div');
+        itemCard.className = `checklist-item ${isChecked ? 'checked' : ''}`;
+        itemCard.innerHTML = `
+          <input type="checkbox" id="${item.id}" ${isChecked ? 'checked' : ''} onchange="toggleChecklistItem('${item.id}', this)">
+          <div class="checklist-text-wrapper">
+            <span class="checklist-item-title">${item.title}</span>
+            <span class="checklist-item-desc">${item.desc}</span>
+          </div>
+        `;
+        root.appendChild(itemCard);
+      });
+    }
+
+    function toggleChecklistItem(itemId, element) {
+      if (element.checked) {
+        if (!state.checklist.includes(itemId)) {
+          state.checklist.push(itemId);
+        }
+        element.parentElement.classList.add('checked');
+      } else {
+        state.checklist = state.checklist.filter(id => id !== itemId);
+        element.parentElement.classList.remove('checked');
+      }
+      saveState();
+    }
+
+    function resetChecklist() {
+      state.checklist = [];
+      saveState();
+      renderChecklist();
+    }
+
+    function renderAccordions() {
+      const root = document.getElementById('accordion-root');
+      root.innerHTML = '';
+      
+      accordionData.forEach((item, idx) => {
+        const acc = document.createElement('div');
+        acc.className = 'accordion-item';
+        acc.id = `acc-${idx}`;
+        acc.innerHTML = `
+          <div class="accordion-header" onclick="toggleAccordion(${idx})">
+            <div class="accordion-header-left">
+              <span class="accordion-badge ${item.badge}">${item.category}</span>
+              <span>${item.question}</span>
+            </div>
+            <svg class="accordion-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-inner-body">${item.answer}</div>
+          </div>
+        `;
+        root.appendChild(acc);
+      });
+    }
+
+    function toggleAccordion(idx) {
+      const item = document.getElementById(`acc-${idx}`);
+      const isOpen = item.classList.contains('open');
+      
+      // Close all accordions first
+      const allItems = document.querySelectorAll('.accordion-item');
+      allItems.forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.accordion-content').style.maxHeight = null;
+      });
+
+      if (!isOpen) {
+        item.classList.add('open');
+        const content = item.querySelector('.accordion-content');
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    }
+
+    // ==================== SEARCH ENGINE ====================
+    
+    // Create database of content nodes for searchable keywords
+    const searchDB = [
+      { id: 'exp1', type: 'experiment', title: 'Conductometric Titration', text: 'conductivity conductance resistance specific cell constant strong acid strong base hydrogen sodium hydroxide HCl NaOH equivalence endpoint V-shape' },
+      { id: 'exp1-theory', type: 'content', title: 'Conductometric Principles', text: 'conductance G is 1/R specific conductivity cell constant. H+ ions replaced by slower Na+ ions, decreasing conductance. Excess OH- increases conductance.' },
+      { id: 'exp1-formula', type: 'formula', title: 'HCl Conductometric Equation', text: 'Formula 25 * S1 = V3 * S2. Strength S1 = V3 * S2 / 25.' },
+      { id: 'exp2', type: 'experiment', title: 'pH Metric Titration', text: 'pH metrics hydrogen concentration glass calomel reference electrode buffer calibration S-shape derivative' },
+      { id: 'exp2-theory', type: 'content', title: 'pH Metric Principles', text: 'pH is -log [H+]. Equivalence point buffer solutions glass electrode calomel reference pH increases slowly then sharply.' },
+      { id: 'exp2-formula', type: 'formula', title: 'pH Metric HCl Equation', text: 'HCl Strength = V3 * S / 25' },
+      { id: 'exp3', type: 'experiment', title: 'Argentometric Method', text: 'argentometry chloride estimation silver nitrate AgNO3 potassium chromate indicator white AgCl brick-red Ag2CrO4 neutral pH ppm limit drinking water' },
+      { id: 'exp3-theory', type: 'content', title: 'Argentometric Principles', text: 'estimations of chloride with potassium chromate. Neutral medium (pH 6.5 to 9) needed. Dichromate conversions. White AgCl then reddish-brown Ag2CrO4.' },
+      { id: 'exp3-formula', type: 'formula', title: 'Chloride ppm Equation', text: 'Chloride content in ppm = V * N * 35.45 * 1000 / S. Limit is 250 ppm.' },
+      { id: 'exp4', type: 'experiment', title: 'Acid Value of Oil', text: 'acid value oil fat fatty acids KOH neutralization rancidity hydrolysis triglycerides oxalic acid phenolphthalein alcohol-ether' },
+      { id: 'exp4-theory', type: 'content', title: 'Acid Value Principles', text: 'acid value mg KOH per gram oil. Rancid hydrolysis triglycerides. Standardisation of KOH with oxalic acid.' },
+      { id: 'exp4-formula', type: 'formula', title: 'Acid Value Equation', text: 'KOH strength S1 = 10 * 0.01 / V1. Acid value = 56.1 * V * S1 / W. W is weight of oil.' }
+    ];
+
+    function handleSearch() {
+      const box = document.getElementById('search-box');
+      const overlay = document.getElementById('search-overlay-panel');
+      const query = box.value.toLowerCase().trim();
+      
+      if (query.length < 2) {
+        overlay.classList.remove('visible');
+        return;
+      }
+      
+      overlay.classList.add('visible');
+      overlay.innerHTML = '';
+      
+      const matches = searchDB.filter(node => node.text.toLowerCase().includes(query) || node.title.toLowerCase().includes(query));
+      
+      if (matches.length === 0) {
+        overlay.innerHTML = `<div class="no-results">No matches found. Try searching "endpoint", "rancidity", "chromate", etc.</div>`;
+        return;
+      }
+      
+      // Categorize matches
+      const categories = {
+        experiment: [],
+        content: [],
+        formula: []
+      };
+      
+      matches.forEach(m => categories[m.type].push(m));
+      
+      let html = '';
+      for (let type in categories) {
+        if (categories[type].length > 0) {
+          const typeLabel = type.charAt(0).toUpperCase() + type.slice(1) + 's';
+          html += `
+            <div class="search-result-group">
+              <div class="search-result-group-title">${typeLabel}</div>
+          `;
+          
+          categories[type].forEach(item => {
+            const expId = item.id.split('-')[0];
+            const subTab = item.id.split('-')[1] || 'theory';
+            
+            // Build text snippet with highlight
+            let snippet = '';
+            if (type !== 'experiment') {
+              const fullText = item.text;
+              const qIndex = fullText.toLowerCase().indexOf(query);
+              const startIdx = Math.max(0, qIndex - 40);
+              const endIdx = Math.min(fullText.length, qIndex + query.length + 50);
+              let rawSnippet = fullText.slice(startIdx, endIdx);
+              if (startIdx > 0) rawSnippet = '...' + rawSnippet;
+              if (endIdx < fullText.length) rawSnippet = rawSnippet + '...';
+              
+              // Replace query with <mark>
+              const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+              snippet = rawSnippet.replace(regex, '<mark>$1</mark>');
+            } else {
+              snippet = "View this practical dashboard.";
+            }
+
+            html += `
+              <div class="search-result-item" onclick="navigateToSearchMatch('${expId}', '${subTab}')">
+                <div class="search-result-title">${item.title}</div>
+                <div class="search-result-snippet">${snippet}</div>
+              </div>
+            `;
+          });
+          
+          html += `</div>`;
+        }
+      }
+      
+      overlay.innerHTML = html;
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function navigateToSearchMatch(expId, subTab) {
+      switchMainTab(expId);
+      
+      // Trigger click on corresponding subtab button
+      const subTabsNav = document.querySelector(`#pane-${expId} .tabs-nav`);
+      if (subTabsNav) {
+        let btnIndex = 0;
+        if (subTab === 'theory') btnIndex = 0;
+        else if (subTab === 'procedure') btnIndex = 1;
+        else if (subTab === 'simulator' || subTab === 'formula') btnIndex = 2;
+        
+        const btn = subTabsNav.querySelectorAll('.tab-btn')[btnIndex];
+        if (btn) btn.click();
+      }
+      
+      // Clear search
+      document.getElementById('search-overlay-panel').classList.remove('visible');
+      document.getElementById('search-box').value = '';
+    }
+
+    // Dismiss search overlay if user clicks outside
+    document.addEventListener('click', function(e) {
+      const container = document.querySelector('.search-container');
+      if (!container.contains(e.target)) {
+        document.getElementById('search-overlay-panel').classList.remove('visible');
+      }
+    });
+
+    // Quick Action: Show all formulas
+    function triggerShowAllFormulas() {
+      alert(
+        "=== QUICK FORMULAS CHEAT SHEET ===\n\n" +
+        "1. Conductometric:\n" +
+        "   25 * S1 = V3 * S2   =>   Strength HCl (S1) = (V3 * S2) / 25\n\n" +
+        "2. pH Metric:\n" +
+        "   Strength HCl = (V3 * S) / 25\n\n" +
+        "3. Argentometry:\n" +
+        "   Chloride (ppm) = (V * N * 35.45 * 1000) / S\n\n" +
+        "4. Acid Value of Oil:\n" +
+        "   KOH Strength (S1) = (10 * 0.01) / V1\n" +
+        "   Acid Value = (56.1 * V * S1) / W"
+      );
+    }
+
+    // ==================== ON INITIALIZE ====================
+    window.onload = function() {
+      // Set initial values on simulators
+      updateExp1Sim(0);
+      updateExp2Sim(0);
+      updateExp3Sim(0);
+      updateExp4Sim(0);
+      
+      // Load state from localstorage
+      loadState();
+      
+      // Render checklist items & accordions
+      renderChecklist();
+      renderAccordions();
+      
+      // Initialize Quiz & Flashcards for Experiment 1
+      initQuiz('exp1');
+      updateFlashcardUI('exp1');
+    };
+  </script>
+
+</body>
+</html>
