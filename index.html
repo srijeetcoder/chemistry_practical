@@ -1204,16 +1204,48 @@
         height: auto;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
-        position: relative;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-color: var(--bg-surface);
+      }
+
+      .sidebar-header {
+        padding: 0.75rem 1rem;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border-color);
       }
 
       .sidebar-menu {
-        display: none;
-        /* Can be toggled on mobile, for now simple top flow */
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 0.5rem 1rem;
+        gap: 0.5rem;
+        -webkit-overflow-scrolling: touch;
       }
 
-      .sidebar-menu.mobile-visible {
-        display: flex;
+      .sidebar-menu::-webkit-scrollbar {
+        display: none;
+      }
+
+      .menu-section-title {
+        display: none;
+      }
+
+      .menu-item {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+      }
+
+      .menu-item-left {
+        gap: 0.4rem;
+      }
+
+      .sidebar-footer {
+        display: none;
       }
 
       .main-panel {
@@ -1222,6 +1254,12 @@
 
       .content-grid {
         grid-template-columns: 1fr;
+      }
+
+      .dashboard-header {
+        position: relative;
+        top: auto;
+        padding: 1rem;
       }
     }
 
@@ -1238,6 +1276,45 @@
 
       .quick-actions {
         justify-content: space-between;
+      }
+
+      .exp-title {
+        font-size: 1.5rem !important;
+      }
+
+      .exp-hero {
+        padding: 1.25rem !important;
+      }
+
+      .dashboard-content {
+        padding: 1rem !important;
+      }
+
+      .tab-btn {
+        font-size: 0.85rem !important;
+        padding: 0.5rem 0.25rem 0.75rem 0.25rem !important;
+      }
+
+      .tabs-nav {
+        gap: 1rem !important;
+      }
+
+      .card-question {
+        font-size: 1.1rem !important;
+      }
+
+      .flashcard-container {
+        height: 220px !important;
+      }
+
+      .flashcard-front,
+      .flashcard-back {
+        padding: 1.25rem !important;
+      }
+
+      .reaction-eq {
+        font-size: 0.95rem !important;
+        padding: 0.5rem 0.75rem !important;
       }
     }
   </style>
@@ -1409,12 +1486,12 @@
                   <div class="highlight-box" style="margin-top: 1rem;">
                     <strong>Why does conductance drop, then rise?</strong>
                     <p style="font-size: 0.9rem; margin-top: 0.25rem;">1. <strong>Before Equivalence Point:</strong>
-                      When NaOH is added, highly mobile H<sup>+</sup> ions ($349.8\,\text{S cm}^2/\text{eq}$) are
+                      When NaOH is added, highly mobile H<sup>+</sup> ions (349.8 S cm<sup>2</sup> eq<sup>-1</sup>) are
                       neutralized by OH<sup>-</sup> to form water, and replaced by slower, heavier Na<sup>+</sup> ions
-                      ($50.1\,\text{S cm}^2/\text{eq}$). Hence, conductance decreases rapidly.</p>
+                      (50.1 S cm<sup>2</sup> eq<sup>-1</sup>). Hence, conductance decreases rapidly.</p>
                     <p style="font-size: 0.9rem; margin-top: 0.25rem;">2. <strong>After Equivalence Point:</strong> All
                       HCl is neutralized. Further addition of NaOH introduces excess highly mobile OH<sup>-</sup> ions
-                      ($198\,\text{S cm}^2/\text{eq}$) and Na<sup>+</sup> ions. Hence, conductance increases sharply.
+                      (198 S cm<sup>2</sup> eq<sup>-1</sup>) and Na<sup>+</sup> ions. Hence, conductance increases sharply.
                     </p>
                   </div>
                 </div>
@@ -1861,7 +1938,7 @@
 
                   <div class="highlight-box" style="margin-top: 1rem;">
                     <strong>Why must the pH be strictly neutral (pH 6.5 to 9.0)?</strong>
-                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">1. <strong>If too acidic (pH < 6.5):</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.25rem;">1. <strong>If too acidic (pH &lt; 6.5):</strong>
                           Chromate (CrO<sub>4</sub><sup>2-</sup>) is converted to hydrogen chromate and dichromate
                           (Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup>) ions: <br>2CrO<sub>4</sub><sup>2-</sup> +
                           2H<sup>+</sup> &rarr; Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup> + H<sub>2</sub>O. Silver
@@ -2078,7 +2155,7 @@
                         standard</strong> because it is highly hygroscopic (absorbs moisture) and reacts with
                       atmospheric CO<sub>2</sub>. Therefore, it cannot be weighed directly to prepare an exact solution.
                       It must be standardized against a stable <strong>primary standard</strong> like <strong>oxalic
-                        acid</strong> ($H_2C_2O_4 \cdot 2H_2O$).</p>
+                        acid</strong> (H<sub>2</sub>C<sub>2</sub>O<sub>4</sub> &middot; 2H<sub>2</sub>O).</p>
                   </div>
                 </div>
 
@@ -2313,13 +2390,13 @@
 
     // Checklists Data
     const checklistData = [
-      { id: 'chk-1', title: 'Conductivity Definitions', desc: 'Understand conductance G = 1/R (Siemens), specific conductivity (k = cell constant * G), cell constant (l/A).', category: 'Definitions' },
-      { id: 'chk-2', title: 'Grotthuss proton-hopping', desc: 'Know that H+ has extremely high ionic mobility due to proton-hopping through hydrogen-bonded water networks, unlike sodium Na+.', category: 'Definitions' },
-      { id: 'chk-3', title: 'pH logarithmic relation', desc: 'pH = -log10[H+]. Understand why dilution of 0.1 N HCl (pH 1) to 0.01 N HCl (pH 2) is a 10x drop in concentration.', category: 'Definitions' },
-      { id: 'chk-4', title: 'Conductometric Graph V-shape', desc: 'Draw a V graph. Explain why left arm goes down (Na+ replaces H+) and right arm goes up (excess OH- ions).', category: 'Graph shapes' },
+      { id: 'chk-1', title: 'Conductivity Definitions', desc: 'Understand conductance G = 1/R (Siemens), specific conductance (&kappa; = cell constant * G), cell constant (l/A).', category: 'Definitions' },
+      { id: 'chk-2', title: 'Grotthuss proton-hopping', desc: 'Know that H<sup>+</sup> has extremely high ionic mobility due to proton-hopping through hydrogen-bonded water networks, unlike sodium Na<sup>+</sup>.', category: 'Definitions' },
+      { id: 'chk-3', title: 'pH logarithmic relation', desc: 'pH = -log<sub>10</sub>[H<sup>+</sup>]. Understand why dilution of 0.1 N HCl (pH 1) to 0.01 N HCl (pH 2) is a 10x drop in concentration.', category: 'Definitions' },
+      { id: 'chk-4', title: 'Conductometric Graph V-shape', desc: 'Draw a V graph. Explain why left arm goes down (Na<sup>+</sup> replaces H<sup>+</sup>) and right arm goes up (excess OH<sup>-</sup> ions).', category: 'Graph shapes' },
       { id: 'chk-5', title: 'pH Metric Graph S-shape', desc: 'Draw a sigmoidal S graph. Equivalence point is at inflection point (steepest part of curve). Derivative graph shows a peak.', category: 'Graph shapes' },
-      { id: 'chk-6', title: 'Argentometry Reactions', desc: '1. Ag+ + Cl- -> AgCl (white ppt). 2. 2Ag+ + CrO4(2-) -> Ag2CrO4 (brick red ppt indicator endpoint).', category: 'Reactions' },
-      { id: 'chk-7', title: 'Argentometry Neutral pH reason', desc: 'pH must be 6.5 to 9. Acidic converts chromate to dichromate (red ppt fails). Basic precipitates silver as silver hydroxide/oxide.', category: 'Precautions' },
+      { id: 'chk-6', title: 'Argentometry Reactions', desc: '1. Ag<sup>+</sup> + Cl<sup>-</sup> &rarr; AgCl (white ppt). 2. 2Ag<sup>+</sup> + CrO<sub>4</sub><sup>2-</sup> &rarr; Ag<sub>2</sub>CrO<sub>4</sub> (brick-red ppt indicator endpoint).', category: 'Reactions' },
+      { id: 'chk-7', title: 'Argentometry Neutral pH reason', desc: 'pH must be 6.5 to 9. Acidic pH converts chromate to dichromate (red ppt fails). Basic pH precipitates silver as silver hydroxide/oxide.', category: 'Precautions' },
       { id: 'chk-8', title: 'Acid Value definition', desc: 'Milligrams of KOH needed to neutralize free fatty acids in 1 gram of oil. Measures rancidity/hydrolysis.', category: 'Definitions' },
       { id: 'chk-9', title: 'KOH Standardization rationale', desc: 'KOH is secondary standard (hygroscopic, absorbs CO2). Standardize against oxalic acid (primary standard).', category: 'Calculations' },
       { id: 'chk-10', title: 'Acid Value Formula', desc: 'Acid value = (56.1 * V * Normality of KOH) / Weight of oil. 56.1 is molecular weight of KOH.', category: 'Calculations' }
@@ -2328,8 +2405,8 @@
     // Accordions Data
     const accordionData = [
       {
-        question: "Why does H+ have much higher conductivity than Na+ or K+ ions?",
-        answer: "H+ ions conduct electricity via the <strong>Grotthuss proton-hopping mechanism</strong>. Instead of physically migrating through the solvent, a proton jumps from one water molecule to the next in a hydrogen-bonded network. Na+ and K+ must migrate physically, encountering resistance.",
+        question: "Why does H<sup>+</sup> have much higher conductivity than Na<sup>+</sup> or K<sup>+</sup> ions?",
+        answer: "H<sup>+</sup> ions conduct electricity via the <strong>Grotthuss proton-hopping mechanism</strong>. Instead of physically migrating through the solvent, a proton jumps from one water molecule to the next in a hydrogen-bonded network. Na<sup>+</sup> and K<sup>+</sup> must migrate physically, encountering resistance.",
         category: "Conductometric",
         badge: "badge-exp1"
       },
@@ -2347,13 +2424,13 @@
       },
       {
         question: "Why is a glass electrode called an ion-selective electrode?",
-        answer: "It has a thin glass membrane that selectively allows H+ ions in solution to exchange with ions in the membrane surface, creating a potential difference proportional to the logarithm of H+ concentration (pH). It does not respond to other cations like Na+ under normal conditions.",
+        answer: "It has a thin glass membrane that selectively allows H<sup>+</sup> ions in solution to exchange with ions in the membrane surface, creating a potential difference proportional to the logarithm of H<sup>+</sup> concentration (pH). It does not respond to other cations like Na<sup>+</sup> under normal conditions.",
         category: "pH Metric",
         badge: "badge-exp2"
       },
       {
         question: "Why does pH rise so sharply near the equivalence point?",
-        answer: "pH is a logarithmic scale. Near the equivalence point, the concentration of H+ drops to near-neutrality (10<sup>-7</sup> M). Because the scale is logarithmic, the transition from acidic (e.g. pH 4) to basic (e.g. pH 10) takes only a minute fraction of base addition, creating a sudden vertical cliff on the curve.",
+        answer: "pH is a logarithmic scale. Near the equivalence point, the concentration of H<sup>+</sup> drops to near-neutrality (10<sup>-7</sup> M). Because the scale is logarithmic, the transition from acidic (e.g. pH 4) to basic (e.g. pH 10) takes only a minute fraction of base addition, creating a sudden vertical cliff on the curve.",
         category: "pH Metric",
         badge: "badge-exp2"
       },
@@ -2364,8 +2441,8 @@
         badge: "badge-exp2"
       },
       {
-        question: "Why does AgCl precipitate before Ag2CrO4 during chloride estimation?",
-        answer: "Even though silver chromate has a lower solubility product in terms of absolute values, AgCl has a much lower solubility in water. Silver chloride precipitates when [Ag+][Cl-] exceeds Ksp (1.8 &times; 10<sup>-10</sup>). Ag2CrO4 requires [Ag+]<sup>2</sup>[CrO4<sup>2-</sup>] to exceed Ksp (1.1 &times; 10<sup>-12</sup>), requiring a much higher silver ion concentration. Hence, silver chromate precipitates only after all chloride is consumed.",
+        question: "Why does AgCl precipitate before Ag<sub>2</sub>CrO<sub>4</sub> during chloride estimation?",
+        answer: "Even though silver chromate has a lower solubility product in terms of absolute values, AgCl has a much lower solubility in water. Silver chloride precipitates when [Ag<sup>+</sup>][Cl<sup>-</sup>] exceeds <i>K</i><sub>sp</sub> (1.8 &times; 10<sup>-10</sup>). Ag<sub>2</sub>CrO<sub>4</sub> requires [Ag<sup>+</sup>]<sup>2</sup>[CrO<sub>4</sub><sup>2-</sup>] to exceed <i>K</i><sub>sp</sub> (1.1 &times; 10<sup>-12</sup>), requiring a much higher silver ion concentration. Hence, silver chromate precipitates only after all chloride is consumed.",
         category: "Argentometry",
         badge: "badge-exp3"
       },
@@ -2447,7 +2524,7 @@
         { q: "Why does conductance decrease first during the titration of HCl against NaOH?", a: "The highly mobile H<sup>+</sup> ions of HCl are neutralized and replaced by slower, heavier Na<sup>+</sup> ions from the NaOH solution, causing a drop in overall conductance before the equivalence point." },
         { q: "What is specific conductance and its units?", a: "Specific conductance (&kappa;) is the conductance of 1 cm<sup>3</sup> of an electrolyte solution. Its unit is Siemens per centimeter (S cm<sup>-1</sup>)." },
         { q: "What is the Cell Constant?", a: "Cell constant is the ratio of distance between electrodes to their area of cross-section (l/A). It is expressed in cm<sup>-1</sup>." },
-        { q: "Why does conductance increase after the endpoint?", a: "After the neutralization of all HCl, further addition of NaOH adds excess highly mobile OH<sup>-</sup> ions ($198\,\text{S}$) and Na<sup>+</sup> ions, causing conductance to rise sharply." },
+        { q: "Why does conductance increase after the endpoint?", a: "After the neutralization of all HCl, further addition of NaOH adds excess highly mobile OH<sup>-</sup> ions (198 S cm<sup>2</sup> eq<sup>-1</sup>) and Na<sup>+</sup> ions, causing conductance to rise sharply." },
         { q: "Why is conductometric titration preferred over indicator titration?", a: "It can be used for colored, turbid, or highly dilute solutions, and for titrating weak acids/bases where visual indicators fail to give a sharp endpoint." }
       ],
       exp2: [
@@ -2458,7 +2535,7 @@
         { q: "How do you find the endpoint from a pH metric titration graph?", a: "Locate the inflection point (midpoint of the steep vertical rise) on a pH vs. Volume graph, or locate the peak of a first-derivative graph (&Delta;pH/&Delta;V vs. Volume)." }
       ],
       exp3: [
-        { q: "Why does silver chloride precipitate before silver chromate starts precipitating?", a: "Silver chloride (AgCl) has a much lower solubility ($K_{sp} \approx 1.8 \times 10^{-10}$) than silver chromate ($K_{sp} \approx 1.1 \times 10^{-12}$). Since AgCl requires only one silver ion per formula unit, it reaches its solubility product and precipitates at a much lower Ag<sup>+</sup> concentration." },
+        { q: "Why does silver chloride precipitate before silver chromate starts precipitating?", a: "Silver chloride (AgCl) has a much lower solubility (<i>K</i><sub>sp</sub> &approx; 1.8 &times; 10<sup>-10</sup>) than silver chromate (<i>K</i><sub>sp</sub> &approx; 1.1 &times; 10<sup>-12</sup>). Since AgCl requires only one silver ion per formula unit, it reaches its solubility product and precipitates at a much lower Ag<sup>+</sup> concentration." },
         { q: "Why must the pH in Mohr's method be kept neutral (pH 6.5 - 9.0)?", a: "In acidic media, chromate ions (CrO<sub>4</sub><sup>2-</sup>) convert to dichromate: 2CrO<sub>4</sub><sup>2-</sup> + 2H<sup>+</sup> &harr; Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup> + H<sub>2</sub>O. Silver dichromate is highly soluble in water, meaning the reddish-brown silver chromate precipitate will not form at the endpoint. This causes over-titration and error." },
         { q: "What is the endpoint color change in Mohr's method?", a: "The solution changes from clear yellow (chromate indicator color) to a permanent faint reddish-brown/brick-red precipitate of silver chromate." },
         { q: "What happens if pH is above 9 or 10?", a: "At high pH, silver ions (Ag<sup>+</sup>) react with excess hydroxide ions (OH<sup>-</sup>) to form a dark precipitate of silver hydroxide/oxide, consuming AgNO<sub>3</sub> prematurely." },
