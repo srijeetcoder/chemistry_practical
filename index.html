@@ -3,6 +3,47 @@
 
 <head>
   <meta charset="UTF-8">
+  <style id="auth-cloak">
+    body { display: none !important; }
+  </style>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const supabase = createClient(
+      'https://hzjjtamircvppqfyaayy.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6amp0YW1pcmN2cHBxZnlhYXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1OTQ0NjAsImV4cCI6MjEwMTE3MDQ2MH0.7ugD6xLVeT4CFqBagy1q3D977DQ80GCDkuJDojLWhVc'
+    );
+
+    async function checkAuth() {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      const query = new URLSearchParams(window.location.search);
+      const accessToken = hash.get('access_token') ?? query.get('access_token');
+      const refreshToken = hash.get('refresh_token') ?? query.get('refresh_token');
+
+      if (accessToken && refreshToken) {
+        try {
+          await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+        } catch (err) {
+          console.error('[auth] Failed to adopt session:', err);
+        }
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        const hubUrl = 'http://localhost:3000/';
+        const back = encodeURIComponent(window.location.href);
+        window.location.replace(`${hubUrl}?next=${back}`);
+      } else {
+        document.getElementById('auth-cloak')?.remove();
+      }
+    }
+
+    checkAuth();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chemistry Lab Dashboard</title>
   <!-- SEO Meta Tags -->
@@ -3012,9 +3053,9 @@
     // ==================== NAVIGATION & TAB ACTIONS ====================
 
     function switchMainTab(tabId, updateHash = true) {
+      // Always update the hash silently (without triggering hashchange loop)
       if (updateHash) {
-        window.location.hash = tabId;
-        return;
+        history.replaceState(null, '', '#' + tabId);
       }
 
       // Hide search overlay if visible
