@@ -34,7 +34,8 @@
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        const hubUrl = 'http://localhost:3000/';
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const hubUrl = isLocal ? 'http://localhost:3000/' : 'https://secondsem-makautbusters.vercel.app/';
         const back = encodeURIComponent(window.location.href);
         window.location.replace(`${hubUrl}?next=${back}`);
       } else {
