@@ -25,7 +25,9 @@
             access_token: accessToken,
             refresh_token: refreshToken,
           });
-          window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+          const targetHash = hash.get('redirect_hash') || '';
+          const newHash = targetHash ? '#' + targetHash : '';
+          window.history.replaceState({}, document.title, window.location.pathname + window.location.search + newHash);
         } catch (err) {
           console.error('[auth] Failed to adopt session:', err);
         }
