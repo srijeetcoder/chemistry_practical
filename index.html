@@ -40,6 +40,34 @@
         window.location.replace(`${hubUrl}?next=${back}`);
       } else {
         document.getElementById('auth-cloak')?.remove();
+        
+        let fullName = "Anonymous";
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', user.id)
+            .maybeSingle();
+          if (profile && profile.full_name) {
+            fullName = profile.full_name;
+          } else if (user.user_metadata && user.user_metadata.full_name) {
+            fullName = user.user_metadata.full_name;
+          } else if (user.email) {
+            fullName = user.email.split('@')[0];
+          }
+        } catch (err) {
+          console.error("Failed to fetch profile name:", err);
+        }
+
+        window.supabaseUser = {
+          id: user.id,
+          name: fullName,
+          email: user.email
+        };
+
+        if (typeof window.initVisitorWithSupabase === 'function') {
+          window.initVisitorWithSupabase(window.supabaseUser);
+        }
       }
     }
 
@@ -3855,44 +3883,46 @@
     const backdrop = document.getElementById('name-popup-backdrop');
     const nameInput = document.getElementById('visitor-name-input');
 
-    async function initVisitor() {
+    async function initVisitorWithSupabase(supabaseUser) {
       if (!db) {
         updateUIUnavailable();
         return;
       }
 
-      let visitorId = localStorage.getItem('chemistryVisitorId');
-      let isNewVisitor = false;
+      const visitorId = supabaseUser.id;
+      localStorage.setItem('chemistryVisitorId', visitorId);
 
-      if (!visitorId) {
-        visitorId = generateId();
-        localStorage.setItem('chemistryVisitorId', visitorId);
-        isNewVisitor = true;
-      }
+      const name = supabaseUser.name;
+      const isNamed = name && name !== "Anonymous";
 
       try {
-        if (isNewVisitor) {
-          // Add default anonymous visitor to Firestore
-          await setDoc(doc(db, "visitors", visitorId), {
-            visitorId: visitorId,
-            name: "Anonymous",
-            visitedAt: serverTimestamp(),
-            userAgent: navigator.userAgent,
-            page: window.location.pathname,
-            isNamedVisitor: false
-          });
-        }
+        // Automatically create or update the visitor document in Firestore using Supabase user.id
+        await setDoc(doc(db, "visitors", visitorId), {
+          visitorId: visitorId,
+          name: name,
+          visitedAt: serverTimestamp(),
+          userAgent: navigator.userAgent,
+          page: window.location.pathname,
+          isNamedVisitor: isNamed
+        }, { merge: true });
 
-        const popupSeen = localStorage.getItem('chemistryPopupSeen');
-        if (isNewVisitor && !popupSeen) {
-          showPopup();
-        }
+        // Update local storage name so the manual set-name input shows their current name
+        localStorage.setItem('chemistryVisitorName', name);
+        localStorage.setItem('chemistryPopupSeen', 'true'); // Automatically named, no need to show the popup!
 
         await refreshVisitorData();
       } catch (err) {
         console.error("Firestore operation failed:", err);
         updateUIUnavailable();
       }
+    }
+
+    // Expose globally for checkAuth to call
+    window.initVisitorWithSupabase = initVisitorWithSupabase;
+
+    // In case checkAuth finished first
+    if (window.supabaseUser) {
+      initVisitorWithSupabase(window.supabaseUser);
     }
 
     function showPopup() {
@@ -4084,8 +4114,7 @@
     window.refreshVisitorData = refreshVisitorData;
     window.openNamePopupManual = showPopup;
 
-    // Run visitor initialization
-    initVisitor();
+    // Run visitor initialization is now handled by initVisitorWithSupabase triggered from checkAuth
   </script>
 
 </body>
