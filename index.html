@@ -4,11 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <style id="auth-cloak">
-    body { display: none !important; }
+    .dashboard-container { display: none !important; }
   </style>
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-    const supabase = createClient(
+  <!-- Load Supabase UMD Bundle from high-performance jsDelivr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = window.supabase.createClient(
       'https://hzjjtamircvppqfyaayy.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6amp0YW1pcmN2cHBxZnlhYXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1OTQ0NjAsImV4cCI6MjEwMTE3MDQ2MH0.7ugD6xLVeT4CFqBagy1q3D977DQ80GCDkuJDojLWhVc'
     );
@@ -35,13 +36,24 @@
 
       const { data: { user } } = await supabase.auth.getUser();
 
+      // Helper function to remove loading overlay and uncloak UI
+      function showAppUI() {
+        const overlay = document.getElementById('auth-loading-overlay');
+        if (overlay) {
+          overlay.style.opacity = '0';
+          overlay.style.visibility = 'hidden';
+          setTimeout(() => overlay.remove(), 400);
+        }
+        document.getElementById('auth-cloak')?.remove();
+      }
+
       if (!user) {
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const hubUrl = isLocal ? 'http://localhost:3000/' : 'https://secondsem-makautbusters.vercel.app/';
         const back = encodeURIComponent(window.location.href);
         window.location.replace(`${hubUrl}?next=${back}`);
       } else {
-        document.getElementById('auth-cloak')?.remove();
+        showAppUI();
         
         let fullName = "Anonymous";
         try {
@@ -1679,6 +1691,19 @@
 </head>
 
 <body>
+  <!-- Premium Loading Overlay -->
+  <div id="auth-loading-overlay" style="position: fixed; inset: 0; background-color: #030303; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999999; font-family: 'Space Grotesk', system-ui, sans-serif; transition: opacity 0.4s ease, visibility 0.4s ease;">
+    <div style="width: 48px; height: 48px; border: 3px solid rgba(0, 229, 255, 0.1); border-top: 3px solid #00e5ff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1.5rem; box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);"></div>
+    <div style="font-size: 1.25rem; font-weight: 700; color: #e5e4e2; margin-bottom: 0.5rem; letter-spacing: -0.5px;">Chemistry Laboratory</div>
+    <div style="font-size: 0.8rem; color: #7a7a7a;">Authenticating secure session...</div>
+  </div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
   <!-- WATERMARK -->
   <a href="https://github.com/srijeetcoder" target="_blank" rel="noopener noreferrer" class="watermark">SRIJEET</a>
 
