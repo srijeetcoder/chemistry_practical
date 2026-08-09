@@ -9,79 +9,134 @@
   <!-- Load Supabase UMD Bundle from high-performance jsDelivr CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const supabase = window.supabase.createClient(
-      'https://hzjjtamircvppqfyaayy.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6amp0YW1pcmN2cHBxZnlhYXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1OTQ0NjAsImV4cCI6MjEwMTE3MDQ2MH0.7ugD6xLVeT4CFqBagy1q3D977DQ80GCDkuJDojLWhVc'
-    );
+    let supabaseClient = null;
+    try {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        supabaseClient = window.supabase.createClient(
+          'https://hzjjtamircvppqfyaayy.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6amp0YW1pcmN2cHBxZnlhYXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1OTQ0NjAsImV4cCI6MjEwMTE3MDQ2MH0.7ugD6xLVeT4CFqBagy1q3D977DQ80GCDkuJDojLWhVc'
+        );
+      } else {
+        console.error("Supabase library not loaded. Check network or ad-blocker.");
+      }
+    } catch (e) {
+      console.error("Error initializing Supabase client:", e);
+    }
 
     async function checkAuth() {
-      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-      const query = new URLSearchParams(window.location.search);
-      const accessToken = hash.get('access_token') ?? query.get('access_token');
-      const refreshToken = hash.get('refresh_token') ?? query.get('refresh_token');
-
-      if (accessToken && refreshToken) {
-        try {
-          await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          });
-          const targetHash = hash.get('redirect_hash') || '';
-          const newHash = targetHash ? '#' + targetHash : '';
-          window.history.replaceState({}, document.title, window.location.pathname + window.location.search + newHash);
-        } catch (err) {
-          console.error('[auth] Failed to adopt session:', err);
-        }
-      }
-
-      const { data: { user } } = await supabase.auth.getUser();
-
       // Helper function to remove loading overlay and uncloak UI
       function showAppUI() {
-        const overlay = document.getElementById('auth-loading-overlay');
-        if (overlay) {
-          overlay.style.opacity = '0';
-          overlay.style.visibility = 'hidden';
-          setTimeout(() => overlay.remove(), 400);
-        }
-        document.getElementById('auth-cloak')?.remove();
-      }
-
-      if (!user) {
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const hubUrl = isLocal ? 'http://localhost:3000/' : 'https://secondsem-makautbusters.vercel.app/';
-        const back = encodeURIComponent(window.location.href);
-        window.location.replace(`${hubUrl}?next=${back}`);
-      } else {
-        showAppUI();
-        
-        let fullName = "Anonymous";
-        try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('id', user.id)
-            .maybeSingle();
-          if (profile && profile.full_name) {
-            fullName = profile.full_name;
-          } else if (user.user_metadata && user.user_metadata.full_name) {
-            fullName = user.user_metadata.full_name;
-          } else if (user.email) {
-            fullName = user.email.split('@')[0];
+        const removeOverlay = () => {
+          const overlay = document.getElementById('auth-loading-overlay');
+          if (overlay) {
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+            setTimeout(() => overlay.remove(), 400);
           }
-        } catch (err) {
-          console.error("Failed to fetch profile name:", err);
-        }
-
-        window.supabaseUser = {
-          id: user.id,
-          name: fullName,
-          email: user.email
+          document.getElementById('auth-cloak')?.remove();
         };
 
-        if (typeof window.initVisitorWithSupabase === 'function') {
-          window.initVisitorWithSupabase(window.supabaseUser);
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', removeOverlay);
+        } else {
+          removeOverlay();
         }
+      }
+
+      function handleAuthError(message) {
+        console.error(message);
+        const updateOverlay = () => {
+          const overlay = document.getElementById('auth-loading-overlay');
+          if (overlay) {
+            overlay.innerHTML = `
+              <div style="text-align: center; padding: 2rem; max-width: 400px; font-family: 'Space Grotesk', system-ui, sans-serif; color: #f5f5f5;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚠️</div>
+                <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Authentication Failed</div>
+                <p style="font-size: 0.85rem; color: #7a7a7a; margin-bottom: 1.5rem; line-height: 1.5;">${message || 'Failed to authenticate your session.'}</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                  <button onclick="window.location.reload()" style="background: #1f1f1f; border: 1px solid #3a3a3a; color: #f5f5f5; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; transition: 0.3s;">Retry</button>
+                  <button onclick="window.location.href='https://secondsem-makautbusters.vercel.app/'" style="background: #00e5ff; border: none; color: #030303; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);">Return to Hub</button>
+                </div>
+              </div>
+            `;
+          }
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', updateOverlay);
+        } else {
+          updateOverlay();
+        }
+      }
+
+      if (!supabaseClient) {
+        handleAuthError("The authentication library was blocked by your browser (e.g. Brave Shields, uBlock Origin, or AdBlock). Please turn off shields/adblock for this site and refresh.");
+        return;
+      }
+
+      try {
+        const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+        const query = new URLSearchParams(window.location.search);
+        const accessToken = hash.get('access_token') ?? query.get('access_token');
+        const refreshToken = hash.get('refresh_token') ?? query.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          try {
+            await supabaseClient.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            const targetHash = hash.get('redirect_hash') || '';
+            const newHash = targetHash ? '#' + targetHash : '';
+            window.history.replaceState({}, document.title, window.location.pathname + window.location.search + newHash);
+          } catch (err) {
+            console.error('[auth] Failed to adopt session:', err);
+          }
+        }
+
+        const { data, error } = await supabaseClient.auth.getUser();
+        if (error && error.name !== 'AuthSessionMissingError') throw error;
+        const user = data?.user;
+
+        if (!user) {
+          const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const hubUrl = isLocal ? 'http://localhost:3000/' : 'https://secondsem-makautbusters.vercel.app/';
+          const back = encodeURIComponent(window.location.href);
+          window.location.replace(`${hubUrl}?next=${back}`);
+        } else {
+          showAppUI();
+          
+          let fullName = "Anonymous";
+          try {
+            const { data: profile } = await supabaseClient
+              .from('profiles')
+              .select('full_name')
+              .eq('id', user.id)
+              .maybeSingle();
+            if (profile && profile.full_name) {
+              fullName = profile.full_name;
+            } else if (user.user_metadata && user.user_metadata.full_name) {
+              fullName = user.user_metadata.full_name;
+            } else if (user.email) {
+              fullName = user.email.split('@')[0];
+            }
+          } catch (err) {
+            console.error("Failed to fetch profile name:", err);
+          }
+
+          window.supabaseUser = {
+            id: user.id,
+            name: fullName,
+            email: user.email
+          };
+
+          if (typeof window.initVisitorWithSupabase === 'function') {
+            window.initVisitorWithSupabase(window.supabaseUser);
+          }
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        handleAuthError("Failed to communicate with the security server. Please check your network connection or try disabling Brave Shields/adblockers.");
       }
     }
 
