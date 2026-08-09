@@ -89,6 +89,13 @@
             const targetHash = hash.get('redirect_hash') || '';
             const newHash = targetHash ? '#' + targetHash : '';
             window.history.replaceState({}, document.title, window.location.pathname + window.location.search + newHash);
+            
+            // Re-run routing now that tokens are cleared and actual hash is in address bar
+            if (typeof handleRouting === 'function') {
+              handleRouting();
+            } else if (typeof window.handleRouting === 'function') {
+              window.handleRouting();
+            }
           } catch (err) {
             console.error('[auth] Failed to adopt session:', err);
           }
@@ -3233,7 +3240,7 @@
 
     function handleRouting() {
       let hash = window.location.hash.substring(1);
-      if (!hash || hash === 'home') {
+      if (!hash || hash === 'home' || hash.includes('access_token=')) {
         hash = 'exp1';
       }
       switchMainTab(hash, false);
